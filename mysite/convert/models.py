@@ -24,4 +24,17 @@ class Currencies(models.Model):
         return self.country
 
 
+class CurrencyConvert(models.Model):
+    """db storing conversion values"""
+    from_currency = models.CharField(max_length=10)     # from_currency
+    from_value = models.FloatField(default=1.0)         # from_value
+    to_currency = models.CharField(max_length=10)       # to_currency
+    to_value = models.CharField(default=1.0)            # to_value
+    conversion = models.FloatField(default=0.0)         # conversion rate
+    updated_on = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.from_currency
+
+
 
