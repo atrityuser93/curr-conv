@@ -25,6 +25,12 @@
 - use Django-Ninja for APIs on function-based views in Django
 
 ## August 14, 2023
-- 
+- Complete use of `requests` to obtain and store currency symbols in local database (SQLlite) from [Fixer API](http://data.fixer.io)
+- Use `requests` to obtain current conversion rate using [Fixer API](http://data.fixer.io)
+- Complete conversion logic based on input -> USD -> output
+- Debugging in progress
+- APIs pending
+
+## August 15, 2023
 
 

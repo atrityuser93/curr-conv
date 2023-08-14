@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load bootstrap5 %}
+
+{% block title %}
+Available Symbols
+{% endblock %}
+
+{% block content %}
+<div class="container py-2">
+	<div class="container py-2">
+		List of all available codes
+	</div>
+	{% if codes %}
+	<div>
+		{% for item in codes %}
+		<li>{{ item.code }} - {{ item.currency }}</li>
+		{% endfor %}
+	</div>
+	{% else %}
+	<div>
+		Empty database
+	</div>
+	{% endif %}
+</div>
+{% endblock %}

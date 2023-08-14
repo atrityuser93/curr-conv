@@ -17,7 +17,10 @@
 	<main>
 		{% block navbar %}
 		<div class="container card">
-			<a href="{% url 'home' %}" class="btn-primary">Home</a>			
+			<a href="{% url 'convert-home' %}" class="nav-link">Home</a>
+			<a href="{% url 'fetch-symbols' %}" class="nav-link">Fetch Symbols</a>	
+			<a href="{% url 'delete-symbols' %}" class="nav-link">Delete Symbols</a>	
+			<a href="{% url 'symbol-list' %}" class="nav-link">List of Symbols</a>
 		</div>
 		{% endblock %}
 

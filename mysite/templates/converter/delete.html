@@ -2,16 +2,15 @@
 {% load bootstrap5 %}
 
 {% block title %}
-Homepage
+Delete Confirmation Page
 {% endblock %}
 
 {% block content %}
 <div class="container py-2">
-Homepage contents go here
 <form action="." method="POST">
 	{% csrf_token %}
 	{% bootstrap_form form %}
-	{% bootstrap_button "Convert" button_type="submit" button_class="btn-primary" %}
+	{% bootstrap_button "Delete" button_type="submit" button_class="btn-primary" %}
 </form>
 </div>
 {% endblock %}
