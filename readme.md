@@ -18,5 +18,13 @@
 - Django for web application backend
 - HTML, CSS and js as part of Bootstrap V5 for application frontend (for Web GUI only)
 
+## August 12, 2023
+- use `requests` package to perform `GET` requests to any foreign exchange data server API to get country names and symbols
+- use `requests` package to perform `GET` requests to any foreign exchange server API to get current conversion rates (once per day)
+- Build Django application with function-based views (not class-based views) to support Django-Ninja with a GUI front-end (HTML, CSS and JS)
+- use Django-Ninja for APIs on function-based views in Django
+
+## August 14, 2023
+- 
 
 
