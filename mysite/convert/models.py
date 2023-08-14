@@ -5,6 +5,13 @@ from django.utils import timezone
 
 
 # Create your models here.
+class CountryCodes(models.Model):
+    """model storing country code for each currency"""
+    code = models.CharField(max_length=3, primary_key=True,
+                            unique=True)
+    currency = models.CharField(max_length=75, default=None)
+
+
 class Currencies(models.Model):
     """model storing currency to USD conversion rates"""
     country = models.CharField(max_length=25)
@@ -29,7 +36,7 @@ class CurrencyConvert(models.Model):
     from_currency = models.CharField(max_length=10)     # from_currency
     from_value = models.FloatField(default=1.0)         # from_value
     to_currency = models.CharField(max_length=10)       # to_currency
-    to_value = models.CharField(default=1.0)            # to_value
+    to_value = models.FloatField(default=1.0)            # to_value
     conversion = models.FloatField(default=0.0)         # conversion rate
     updated_on = models.DateTimeField(default=timezone.now)
 
