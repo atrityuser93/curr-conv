@@ -33,6 +33,7 @@
 
 ## August 15, 2023
 - Completed and Working backend for currency converter
+- Data fetching is supposed to occur only once per week (to minimize API calls), so if conversion uses existing data from db, rates will be outdated
 - Display of final result can be made better (front-end)
 - API implementation pending
 
