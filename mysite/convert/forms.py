@@ -12,6 +12,15 @@ class CurrencyTickerDelete(forms.Form):
                                         )
 
 
+class CurrencyConvertDelete(forms.Form):
+    """delete all exchange rate data"""
+    delete_confirm = forms.BooleanField(label='confirm deletion',
+                                        widget=forms.CheckboxInput(),
+                                        help_text='please confirm deletion',
+                                        error_messages={'required': 'Please check box to confirm'},
+                                        )
+
+
 class CurrencyConvertForm(forms.Form):
     """form to accept input and output currency"""
 
@@ -29,7 +38,7 @@ class CurrencyConvertForm(forms.Form):
     output_currency = forms.ModelChoiceField(queryset=CountryCodes.objects.all(),
                                              required=True, help_text='Convert from',
                                              label='Convert to')
-    output_value = forms.FloatField(label='Amount')
+    # output_value = forms.FloatField(label='Amount')
 
 
 
