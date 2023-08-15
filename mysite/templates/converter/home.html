@@ -10,8 +10,25 @@ Homepage
 Homepage contents go here
 <form action="." method="POST">
 	{% csrf_token %}
-	{% bootstrap_form form %}
-	{% bootstrap_button "Convert" button_type="submit" button_class="btn-primary" %}
+	<div class="row align-items-center form-group">
+		<div class="col">
+			<label class="form-label">{{ form.input_currency.label }}</label>
+			{{ form.input_currency }}
+		</div>
+		<div class="col">
+			<label class="form-label">{{ form.input_value.label }}</label>
+			{{ form.input_value }}
+		</div>		
+		<div class="col">
+			<label class="form-label">{{ form.output_currency.label }}</label>
+			{{ form.output_currency }}
+		</div>
+		<div class="col pt-4">
+			{% bootstrap_button "Convert" button_type="submit" button_class="btn-primary" %}
+		</div>
+	</div>
+	<!-- {% bootstrap_form form %} -->
+	
 </form>
 </div>
 {% endblock %}
