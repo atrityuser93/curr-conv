@@ -20,6 +20,9 @@ class CountryCodes(models.Model):
     def get_currency_code(self):
         return self.code
 
+    def get_currency_name(self):
+        return self.currency
+
 
 class CurrencyConvert(models.Model):
     """db storing conversion values"""
