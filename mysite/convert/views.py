@@ -62,22 +62,24 @@ def fetch_currency_symbols(request):
         for i_symbol, i_currency in zip(symbols, currency):
             try:
                 logging.info('Before creation {}: {}'.format(i_symbol, i_currency))
-                obj, created = CountryCodes.objects.get_or_create(code=i_symbol,
-                                                                  currency=i_currency,
-                                                                  defaults={'currency': 'nameless currency'})
+
+                obj = CountryCodes.objects.create(code=i_symbol,
+                                                  currency=i_currency,
+                                                  )
                 logging.info('After creation {}: {}'.format(obj.code, obj.currency))
                 added_objs_list.append(obj)
-                boolean_list.append(created)
+                # boolean_list.append(created)
             except IntegrityError:
                 # change to http reponse that says db is already populated
                 logging.exception('IntegrityError exception. '
                                   'Currency {} {} already present'.format(i_symbol, i_currency))
+                objs_list.append(CountryCodes.objects.get(code=i_symbol))
+                continue
                 # return JsonResponse({'created': False, 'country': i_symbol,
                 #                      'currency': i_currency,
                 #                      'error': 'Currency already present in database'})
         # work with response data
-        saved_objects = [True for i_value in boolean_list if i_value]
-        return JsonResponse({'created': len(objs_list), 'saved': len(saved_objects)})
+        return JsonResponse({'created': len(objs_list), 'created and saved': len(added_objs_list)})
 
     return HttpResponse(response)
 
