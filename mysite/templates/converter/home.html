@@ -8,6 +8,7 @@ Homepage
 {% block content %}
 <div class="container py-2">
 Homepage contents go here
+{% if not complete %}
 <form action="." method="POST">
 	{% csrf_token %}
 	<div class="row align-items-center form-group">
@@ -27,8 +28,15 @@ Homepage contents go here
 			{% bootstrap_button "Convert" button_type="submit" button_class="btn-primary" %}
 		</div>
 	</div>
-	<!-- {% bootstrap_form form %} -->
-	
+	<!-- {% bootstrap_form form %} -->	
 </form>
+{% else %}
+
+<div class="row align-items-center">
+	<div class="col">
+		{{ output_value }}
+	</div>	
+</div>
+{% endif %}
 </div>
 {% endblock %}
