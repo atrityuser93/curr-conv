@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load bootstrap5 %}
+
+{% block title %}
+Locally Available Exchange Rates
+{% endblock %}
+
+{% block content %}
+<div class="container py-2">
+	<div class="container py-2">
+		List of all available exchange rates
+	</div>
+	{% if rates %}
+	<!-- {% for item in rates %}
+	{{ item.from_currency }}
+	{{ item.to_USD }}
+	{% endfor %} -->
+	<div class="row align-items-start">
+		<table>
+			<tr>
+				<th class="col">Currency Code</th>
+				<th class="col">USD</th>
+				<th class="col">EUR</th>
+				<th class="col">GBP</th>
+				<th class="col">JPY</th>
+			</tr>
+			{% for item in rates %}		
+			<tr>
+				<td class="col">{{ item.from_currency }}</td>
+				<td class="col">{{ item.to_USD }}</td>
+				<td class="col">{{ item.to_EUR }}</td>
+				<td class="col">{{ item.to_GBP }}</td>
+				<td class="col">{{ item.to_JPY }}</td>
+			</tr>			
+			{% endfor %}
+		</table>			
+	</div>
+	{% else %}
+	<div>
+		No available exchange rates in database
+	</div>
+	{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load bootstrap5 %}
+
+{% block title %}
+Delete Currency List Confirmation
+{% endblock %}
+
+{% block content %}
+<div class="container py-2">
+<form action="." method="POST">
+	{% csrf_token %}
+	{% bootstrap_form form %}
+	{% bootstrap_button "Delete" button_type="submit" button_class="btn-primary" %}
+</form>
+</div>
+{% endblock %}
