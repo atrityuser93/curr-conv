@@ -38,6 +38,7 @@ def home(request):
 
             logging.info('{} {} is {} {}'.format(input_value, input_curr_symbol,
                                                  output_value, output_curr_symbol))
+            # form = CurrencyConvertForm(data={'input_currency': CountryCodes.objects.all().get(pk=input_curr_symbol)})
             return render(request, template_name='converter/home.html',
                           context={'form': form, 'complete': True, 'output_value': output_value})
 
@@ -150,12 +151,8 @@ def fetch_conversion_rates(symbol_in: CountryCodes, symbol_out: CountryCodes):
     currency_in, currency_out = get_conversion_rates(symbol_in, symbol_out)
     logging.info('currency in: {} and currency out: {}'.format(currency_in.code,
                                                                currency_out.code))
-    # convert between currency_in and currency_out through USD
-    # currency_in_2_usd = currency_in.to_USD
-    # currency_out_2_usd = currency_out.to_USD
-    #
-    # currency_in_2_out = currency_out_2_usd / currency_in_2_usd
-    currency_in_2_out = currency_out.to_EUR/currency_in.to_EUR
+    # use EUR as base currency (Determined by API capabilities)
+    currency_in_2_out = currency_in.to_EUR/currency_out.to_EUR
 
     logging.info('1 {} is {} {}'.format(currency_in.code,
                                         currency_in_2_out,
@@ -211,9 +208,9 @@ def query_or_create(symbol: CountryCodes, updated_on: timezone.datetime, url_val
     else:
         # if query set is empty get latest conversion rate for
         # non-existing row and add to db
+        logging.info('query_or_create(data does not exist) '
+                     'Creating new object for symbol {}'.format(symbol.code))
         currency_obj = create_convert_object(url_val, symbol)
-        # logging.info('query_or_create (currency does not exist): '
-        #              'currency_query_time {}'.format(type(currency_obj)))
         return currency_obj
 
 
