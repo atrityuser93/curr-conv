@@ -23,14 +23,16 @@ Locally Available Exchange Rates
 				<th class="col">EUR</th>
 				<th class="col">GBP</th>
 				<th class="col">JPY</th>
+				<th class="col">Last Updated</th>
 			</tr>
 			{% for item in rates %}		
 			<tr>
-				<td class="col">{{ item.from_currency }}</td>
+				<td class="col">{{ item.code }}</td>
 				<td class="col">{{ item.to_USD }}</td>
 				<td class="col">{{ item.to_EUR }}</td>
 				<td class="col">{{ item.to_GBP }}</td>
 				<td class="col">{{ item.to_JPY }}</td>
+				<td class="col">{{ item.updated_on }}</td>
 			</tr>			
 			{% endfor %}
 		</table>			
