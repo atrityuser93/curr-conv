@@ -19,9 +19,12 @@ import logging
 from django.contrib import admin
 from django.urls import path, include
 
+from .api import api
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('converter/', include('convert.urls')),
+    path('api/', api.urls),
     ]
 
 logging.basicConfig(filename='mysite.log', level=logging.INFO)
