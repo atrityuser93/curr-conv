@@ -27,7 +27,7 @@ class CurrencyConvertForm(forms.Form):
     # input_currency_name = forms.CharField(label='From (Currency) ')
     # input_country = forms.ModelChoiceField
     # new_query_set = CountryCodes.objects.all().only('code')
-    input_currency = forms.ModelChoiceField(queryset=CountryCodes.objects.all(),
+    input_currency = forms.ModelChoiceField(queryset=CountryCodes.objects.all().order_by('currency'),
                                             required=True, help_text='Convert from',
                                             label='Convert from')
     # input_currency_all = forms.ModelChoiceField(queryset=CountryCodes.objects.all(),
@@ -35,8 +35,8 @@ class CurrencyConvertForm(forms.Form):
     #                                             label='Convert from')
     input_value = forms.FloatField(label='Amount', required=True)
     # output_currency = forms.CharField(label='To (Currency)')
-    output_currency = forms.ModelChoiceField(queryset=CountryCodes.objects.all(),
-                                             required=True, help_text='Convert from',
+    output_currency = forms.ModelChoiceField(queryset=CountryCodes.objects.all().order_by('currency'),
+                                             required=True, help_text='Convert to',
                                              label='Convert to')
     # output_value = forms.FloatField(label='Amount')
 
