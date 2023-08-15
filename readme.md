@@ -32,5 +32,8 @@
 - APIs pending
 
 ## August 15, 2023
+- Completed and Working backend for currency converter
+- Display of final result can be made better (front-end)
+- API implementation pending
 
 
