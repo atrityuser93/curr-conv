@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load bootstrap5 %}
+
+{% block title %}
+Homepage
+{% endblock %}
+
+{% block content %}
+<div class="container py-2">	
+{% if not complete %}
+<form action="." method="POST">
+	{% csrf_token %}
+	<div class="row align-items-center form-group">
+		<div class="col">
+			<label class="form-label">{{ form.input_currency.label }}</label>
+			{{ form.input_currency }}
+		</div>
+		<div class="col">
+			<label class="form-label">{{ form.input_value.label }}</label>
+			{{ form.input_value }}
+		</div>		
+		<div class="col">
+			<label class="form-label">{{ form.output_currency.label }}</label>
+			{{ form.output_currency }}
+		</div>
+		{% if complete %}
+		<div class="col">
+			<label class="form-label">{{ form.output_value.label }}</label>
+			{{ form.output_value }}
+		</div>
+		{% else %}
+		<div class="col pt-4">
+			{% bootstrap_button "Convert" button_type="submit" button_class="btn-primary" %}
+		</div>
+		{% endif %}
+	</div>
+	<!-- {% bootstrap_form form %} -->	
+</form>
+{% else %}
+<form action="." method="POST">
+	{% csrf_token %}
+	<div class="row align-items-center form-group">
+		<div class="col">
+			<label class="form-label">{{ form.input_currency.label }}</label>
+			{{ form.input_currency }}
+		</div>
+		<div class="col">
+			<label class="form-label">{{ form.input_value.label }}</label>
+			{{ form.input_value }}
+		</div>		
+		<div class="col">
+			<label class="form-label">{{ form.output_currency.label }}</label>
+			{{ form.output_currency }}
+		</div>
+		{% if complete %}
+		<div class="col">
+			<label class="form-label">{{ form.output_value.label }}</label>
+			{{ form.output_value }}
+		</div>
+		{% endif %}
+		<div class="col">
+			{% bootstrap_button "Convert" button_type="submit" button_class="btn-primary" %}
+		</div>	
+	</div>
+	<!-- {% bootstrap_form form %} -->	
+</form>
+{% endif %}
+</div>
+{% endblock %}
