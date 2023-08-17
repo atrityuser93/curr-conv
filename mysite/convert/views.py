@@ -1,10 +1,9 @@
 import requests, logging
-from datetime import datetime
 
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, Http404, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.db import IntegrityError
-from django.utils import timezone
+# from django.utils import timezone
 from django.urls import reverse_lazy
 # from django.db
 
@@ -13,6 +12,7 @@ from django.views.generic import ListView
 from mysite.settings import API_KEY
 
 from .forms import CurrencyConvertForm, CurrencyTickerDelete, CurrencyConvertDelete
+from .forms import CurrencyConvertDisplayForm
 from .models import CountryCodes, ExchangeRates, CurrencyConvert
 
 
@@ -27,9 +27,9 @@ def home(request):
             input_curr_symbol = form.cleaned_data['input_currency']
             output_curr_symbol = form.cleaned_data['output_currency']
             input_value = form.cleaned_data['input_value']
-            logging.info('Input currency: {} and '
-                         'Output currency: {}'.format(input_curr_symbol,
-                                                      output_curr_symbol))
+            # logging.info('Input currency: {} and '
+            #              'Output currency: {}'.format(input_curr_symbol,
+            #                                           output_curr_symbol))
             logging.info('Input type: {} Output type: {}'.format(type(input_curr_symbol),
                                                                  type(output_curr_symbol)))
             # create conversion object (for storing call in db)
@@ -48,9 +48,18 @@ def home(request):
 
             logging.info('{} {} is {} {}'.format(conv_obj.input_value, conv_obj.input_currency,
                                                  conv_obj.output_value, conv_obj.output_currency))
+
             # form = CurrencyConvertForm(data={'input_currency': CountryCodes.objects.all().get(pk=input_curr_symbol)})
+            form = CurrencyConvertForm(data={'input_currency': input_curr_symbol.code,
+                                             'input_value': conv_obj.input_value,
+                                             'output_currency': output_curr_symbol.code,
+                                             'output': conv_obj.output_value})
+            # form.cleaned_data["output_value"] = conv_obj.output_value
+            form = CurrencyConvertDisplayForm(instance=conv_obj)
+            logging.info('{}'.format(vars(form)))
+
             return render(request, template_name='converter/home.html',
-                          context={'form': form, 'complete': True, 'output_value': conv_obj.output_value})
+                          context={'form': form, 'complete': True})
 
     # get initial value for all form fields
 
@@ -59,6 +68,27 @@ def home(request):
 
     return render(request, template_name='converter/home.html',
                   context={'form': form, 'complete': False})
+
+
+# class ConvertView(CreateView):
+#     """class-based view to create a convert currency object"""
+#     form_class = ConvertForm
+#     success_url = reverse_lazy('convert-list')
+#     template_name = 'converter/convert.html'
+#
+#     def form_valid(self, form):
+#         """override class method when form.is_valid() is True"""
+#         logging.info('form_valid: form is valid')
+#         self.object = form.save(commit=False)
+#         self.object.convert(url='http://data.fixer.io/api/latest',
+#                             api_key=API_KEY)
+#
+#         logging.info('ConvertView: form.object type {}'.format(type(self.object)))
+#         self.object.save()
+#         return HttpResponseRedirect(self.get_success_url())
+#
+#     def is_valid(self):
+#         pass
 
 
 def initial_form_value():

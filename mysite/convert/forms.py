@@ -1,3 +1,4 @@
+import logging
 from django import forms
 from django.forms import ModelForm
 
@@ -25,25 +26,35 @@ class CurrencyConvertDelete(forms.Form):
 class CurrencyConvertForm(forms.Form):
     """form to accept input and output currency"""
 
-    # input_currency_name = forms.CharField(label='From (Currency) ')
-    # input_country = forms.ModelChoiceField
-    # new_query_set = CountryCodes.objects.all().only('code')
+    # input values
     input_currency = forms.ModelChoiceField(queryset=CountryCodes.objects.all().order_by('currency'),
                                             required=True, help_text='Convert from',
                                             label='Convert from')
-    # input_currency_all = forms.ModelChoiceField(queryset=CountryCodes.objects.all(),
-    #                                             required=True, help_text='Convert from',
-    #                                             label='Convert from')
     input_value = forms.FloatField(label='Amount', required=True)
-    # output_currency = forms.CharField(label='To (Currency)')
+    # output values
     output_currency = forms.ModelChoiceField(queryset=CountryCodes.objects.all().order_by('currency'),
                                              required=True, help_text='Convert to',
                                              label='Convert to')
-    # output_value = forms.FloatField(label='Amount')
+    output_value = forms.FloatField(label='Amount', required=False)
+
+
+class CurrencyConvertDisplayForm(ModelForm):
+    """class used CurrencyConvert model to display results"""
+    class Meta:
+        model = CurrencyConvert
+        fields = ('input_currency', 'input_value', 'output_currency', 'output_value')
+        template_name = 'converter/'
+
+    def save(self, commit=True):
+        conv = super(CurrencyConvertDisplayForm, self).save(commit=False)
+        if commit:
+            conv.save()
+        return conv
 
 
 # class ConvertForm(ModelForm):
 #     """model-based form for currency conversion"""
+#
 #     input_currency = forms.ModelChoiceField(queryset=CountryCodes.objects.all().order_by('currency'),
 #                                             required=True, help_text='Convert from',
 #                                             label='Convert from')
@@ -51,9 +62,23 @@ class CurrencyConvertForm(forms.Form):
 #     output_currency = forms.ModelChoiceField(queryset=CountryCodes.objects.all().order_by('currency'),
 #                                              required=True, help_text='Convert to',
 #                                              label='Convert to')
+#
 #     class Meta:
 #         model = CurrencyConvert
-#         exclude = ('conversion', 'is_converted', 'asked_on')
+#         fields = ['input_currency', 'input_value', 'output_currency', 'output_value']
+#
+#     def save(self, commit=True):
+#         conv = super(ConvertForm, self).save(commit=False)
+#         conv.input_currency = self.cleaned_data["input_currency"].code
+#         conv.output_currency = self.cleaned_data["output_currency"].code
+#         logging.info('forms: conv obj type: {}'.format(type(conv)))
+#         # conv.convert
+#
+#         if commit:
+#             conv.save()
+#
+#         return conv
+
 #
 #     def save(self, commit=True):
 #         conv = super(ConvertForm, self).save(commit=False)

@@ -88,16 +88,12 @@ class CurrencyConvert(models.Model):
         return self.input_currency
 
     def save(self, *args, **kwargs):
-        # self.input_currency = kwargs['input_currency_model'].code
-        # self.output_currency = kwargs['output_currency_model'].code
         # logging.info('models: %s{} and %s{}'.format(self.input_currency, self.output_currency))
         return super(CurrencyConvert, self).save(*args, **kwargs)
 
     def convert(self, url, api_key):
         """Implements currency conversion logic between input and output currencies"""
         # fetch conversion rates
-        curr_in = CountryCodes.objects.all().get(pk=self.input_currency)
-        curr_out = CountryCodes.objects.all().get(pk=self.output_currency)
         # logging.info('models: In type: {} Out type {}'.format(type(curr_in), type(curr_out)))
         # logging.info('models: In: {}, Out: {}'.format(curr_in, curr_out))
         currency_in, currency_out = self._get_conversion_rates(url=url, api_key=api_key)
@@ -106,6 +102,8 @@ class CurrencyConvert(models.Model):
         self.conversion = currency_in.to_EUR / currency_out.to_EUR
 
         self.convert_currency()
+
+        return self
 
     def convert_currency(self):
         """convert between currency values"""
@@ -174,7 +172,6 @@ class CurrencyConvert(models.Model):
             objs = ExchangeRates(code=curr_obj.code, currency=curr_obj.currency)
             response = self._request_api_call(url_val=url_val, symbol=curr_obj.code, api_key=api_key)
             objs = objs.generate_conversions(response, symbol=curr_obj.code)
-            # currency_obj = create_convert_object(url_val, symbol)
             # save new exchange obj
             objs.save()
             return objs
@@ -188,8 +185,6 @@ class CurrencyConvert(models.Model):
         currency_list = ['USD', 'GBP', 'JPY', symbol]
 
         # logging.info('Make API call for {}'.format(symbol))
-        # curr_obj = CountryCodes.objects.all().get(pk=symbol)
-        # all_symbols = currency_list + curr_obj.get_currency_code_as_list()
         symbol_list = ','.join(currency_list)
         # logging.info('{}'.format(symbol_list))
         api_response = requests.get(url=url_val, params={'access_key': api_key,
