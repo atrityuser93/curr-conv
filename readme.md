@@ -29,7 +29,7 @@
 8. You can access the homepage at the default local server `127.0.0.1:8000/converter/` 
 
 ## August 17, 2023
-
+- Complete working Currency Converter without full API
 
 ## August 15, 2023
 - Completed and Working backend for currency converter
