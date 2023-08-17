@@ -21,7 +21,7 @@
 ## Manual to Use:
 1. Clone or download the repository and create a virutal environment inside the outermost folder that holds the repository by running `python -m venv env` in the command line. Here `env` is the name of the virutal environment
 2. Activate the virutal environment in by running `./env/Scripts/activate` in Powershell. Enclose the command within double quotes as `"./env/Scripts/activate"` if you use the native windows Command Prompt
-3. Install all the required packages provided in the `reuirements.txt` files by running `pip install -r requirements.txt`
+3. Install all the required packages provided in the `requirements.txt` files by running `pip install -r requirements.txt`
 4. Run all database migrations to get ready to run the Django application by running `python manage.py migrate` from inside the outermost Django folder folder
 5. Before running the Django development server you will need to register with [Fixer.io](http://data.fixer.io) to obtain an API for use with this application.
 6. Copy and paste the API key into the `myproject/mysite/settings.py` and assign to a variable `API_KEY`

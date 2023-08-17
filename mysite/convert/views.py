@@ -13,7 +13,7 @@ from django.views.generic import ListView
 from mysite.settings import API_KEY
 
 from .forms import CurrencyConvertForm, CurrencyTickerDelete, CurrencyConvertDelete
-from .models import CountryCodes, CurrencyConvert
+from .models import CountryCodes, ExchangeRates
 
 
 # Create your views here.
@@ -34,6 +34,7 @@ def home(request):
             # conversion_to_usd = Currencies.object.all()
             # get db value for USD -> output
             conversion = fetch_conversion_rates(input_curr_symbol, output_curr_symbol)
+            # output_value = convert_currency(input_value, input_curr_symbol, output_curr_symbol)
             output_value = input_value * conversion
 
             logging.info('{} {} is {} {}'.format(input_value, input_curr_symbol,
@@ -42,10 +43,29 @@ def home(request):
             return render(request, template_name='converter/home.html',
                           context={'form': form, 'complete': True, 'output_value': output_value})
 
+    # get initial value for all form fields
+
+    # form = CurrencyConvertForm(initial={'input'})
     form = CurrencyConvertForm()
 
     return render(request, template_name='converter/home.html',
                   context={'form': form, 'complete': False})
+
+
+def initial_form_value():
+    """get values of your choosing to initialize form"""
+    # input_curr_sym
+    # output_curr_sym
+    # input_val
+    # output_val
+    return None
+
+
+def convert_currency(input_value, currency_in, currency_out):
+    """perform actual conversion between input and
+    output currency - given conversioon value"""
+    conversion = fetch_conversion_rates(currency_in, currency_out)
+    return None
 
 
 def fetch_currency_symbols(request):
@@ -123,7 +143,7 @@ def delete_exchange_rates(request):
     if request.method == 'POST':
         if request.POST['delete_confirm']:
             # delete all country codes in db
-            CurrencyConvert.objects.all().delete()
+            ExchangeRates.objects.all().delete()
             return redirect(reverse_lazy('rates-list'))
 
         return render(request, template_name='converter/delete-exchange-rates.html',
@@ -136,7 +156,7 @@ def delete_exchange_rates(request):
 class AvailableExchangeRatesView(ListView):
     """list view to see all available exchange rates"""
     
-    model = CurrencyConvert
+    model = ExchangeRates
     template_name = 'converter/exchange-list.html'
     context_object_name = 'rates'
     
@@ -161,14 +181,14 @@ def fetch_conversion_rates(symbol_in: CountryCodes, symbol_out: CountryCodes):
 
 
 def get_conversion_rates(symbol_1: CountryCodes, symbol_2: CountryCodes) -> \
-        (CurrencyConvert, CurrencyConvert):
+        (ExchangeRates, ExchangeRates):
     """use fixer.io APIs to fetch latest conversion rates (once a day)"""
 
     # logging.info('fetch conversion rates')
     # url_val to be made dynamic later -
     url_val = 'http://data.fixer.io/api/latest'
     # get conversion value for given symbol within last one week
-    # query_symbol = CurrencyConvert.objects.filter(from_currency=symbol)
+    # query_symbol = ExchangeRates.objects.filter(from_currency=symbol)
     one_week = datetime.today() - timezone.timedelta(days=7)
 
     currency_in = query_or_create(symbol=symbol_1, updated_on=one_week, url_val=url_val)
@@ -185,7 +205,7 @@ def query_or_create(symbol: CountryCodes, updated_on: timezone.datetime, url_val
     """query db for existing value, if emtpy create new object and add to db"""
 
     # check if currency exchange is in db
-    currency_query = CurrencyConvert.objects.filter(code=symbol.code)
+    currency_query = ExchangeRates.objects.filter(code=symbol.code)
     if currency_query:
         # check if exchange rate is updated
         currency_query_time = currency_query.filter(updated_on__gt=updated_on).order_by("updated_on")
@@ -214,7 +234,7 @@ def query_or_create(symbol: CountryCodes, updated_on: timezone.datetime, url_val
         return currency_obj
 
 
-def create_convert_object(url_val: str, symbol: CountryCodes, currency_list=None) -> (CurrencyConvert, bool):
+def create_convert_object(url_val: str, symbol: CountryCodes, currency_list=None) -> (ExchangeRates, bool):
     """get new conversion values update database"""
     response = request_api_call(url_val, symbol)
     obj = generate_conversions(response, symbol)
@@ -243,7 +263,7 @@ def request_api_call(url_val: str, symbol: CountryCodes):
 
 
 # convert response to storable value
-def generate_conversions(response, symbol: CountryCodes, old_obj: CurrencyConvert = None) -> CurrencyConvert:
+def generate_conversions(response, symbol: CountryCodes, old_obj: ExchangeRates = None) -> ExchangeRates:
     """convert JSON response to values that could be used
     for conversion between different currencies"""
 
@@ -262,8 +282,8 @@ def generate_conversions(response, symbol: CountryCodes, old_obj: CurrencyConver
         logging.info('generate_conversions: {} to USD: {}'.format(symbol.code, usd__sym))
 
         if old_obj is None:
-            # create CurrencyConvert object w/o saving
-            obj = CurrencyConvert(code=symbol.code,
+            # create ExchangeRates object w/o saving
+            obj = ExchangeRates(code=symbol.code,
                                   currency=symbol.currency,
                                   to_USD=usd__sym,
                                   to_EUR=1/sym_per_eur,
@@ -272,7 +292,7 @@ def generate_conversions(response, symbol: CountryCodes, old_obj: CurrencyConver
             # logging.info('generate_conversions: obj type {}'.format(type(obj)))
             return obj
         else:
-            # update existing CurrencyConvert object
+            # update existing ExchangeRates object
             if old_obj.code == symbol.code and \
                     old_obj.currency == symbol.currency:
                 old_obj.to_USD = usd__sym
@@ -286,7 +306,7 @@ def generate_conversions(response, symbol: CountryCodes, old_obj: CurrencyConver
     else:
         logging.info('API call unsuccessful. Error: {} and Error code: {}'.format(response["error"]["info"],
                                                                                   response["error"]["code"]))
-        obj = CurrencyConvert()
+        obj = ExchangeRates()
         logging.info('generate_conversion: Empty obj type {}'.format(type(obj)))
         # return empty object
         return obj

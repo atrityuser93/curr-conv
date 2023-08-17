@@ -24,7 +24,7 @@ class CountryCodes(models.Model):
         return self.currency
 
 
-class CurrencyConvert(models.Model):
+class ExchangeRates(models.Model):
     """db storing conversion values"""
     currency = models.CharField(max_length=75)     # from_currency
     code = models.CharField(max_length=3)
@@ -36,7 +36,9 @@ class CurrencyConvert(models.Model):
     updated_on = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return self.from_currency
+        return self.currency
+
+
 
 
 
