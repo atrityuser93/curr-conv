@@ -28,6 +28,9 @@
 7. You can get your application up and running using the command `python manage.py runserver`
 8. You can access the homepage at the default local server `127.0.0.1:8000/converter/` 
 
+## August 17, 2023
+
+
 ## August 15, 2023
 - Completed and Working backend for currency converter
 - Data fetching is supposed to occur only once per week (to minimize API calls), so if conversion uses existing data from db, rates will be outdated

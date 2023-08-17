@@ -1,6 +1,7 @@
 from django import forms
+from django.forms import ModelForm
 
-from .models import CountryCodes
+from .models import CountryCodes, CurrencyConvert
 
 
 class CurrencyTickerDelete(forms.Form):
@@ -16,7 +17,7 @@ class CurrencyConvertDelete(forms.Form):
     """delete all exchange rate data"""
     delete_confirm = forms.BooleanField(label='confirm deletion',
                                         widget=forms.CheckboxInput(),
-                                        help_text='please confirm deletion',
+                                        help_text='Please confirm deletion',
                                         error_messages={'required': 'Please check box to confirm'},
                                         )
 
@@ -40,6 +41,24 @@ class CurrencyConvertForm(forms.Form):
                                              label='Convert to')
     # output_value = forms.FloatField(label='Amount')
 
+
+# class ConvertForm(ModelForm):
+#     """model-based form for currency conversion"""
+#     input_currency = forms.ModelChoiceField(queryset=CountryCodes.objects.all().order_by('currency'),
+#                                             required=True, help_text='Convert from',
+#                                             label='Convert from')
+#     input_value = forms.FloatField(label='Amount', required=True)
+#     output_currency = forms.ModelChoiceField(queryset=CountryCodes.objects.all().order_by('currency'),
+#                                              required=True, help_text='Convert to',
+#                                              label='Convert to')
+#     class Meta:
+#         model = CurrencyConvert
+#         exclude = ('conversion', 'is_converted', 'asked_on')
+#
+#     def save(self, commit=True):
+#         conv = super(ConvertForm, self).save(commit=False)
+#         conv.
+#
 
 
 

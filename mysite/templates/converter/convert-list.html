@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load bootstrap5 %}
+
+{% block title %}
+Locally Called Exchange Rates
+{% endblock %}
+
+{% block content %}
+<div class="container py-2">
+	<div class="container py-2">
+		List of all called exchange rates
+	</div>
+	{% if calls %}
+	<!-- {% for item in rates %}
+	{{ item.from_currency }}
+	{{ item.to_USD }}
+	{% endfor %} -->
+	<div class="row align-items-start">
+		<table>
+			<tr>
+				<th class="col">From</th>
+				<th class="col">To</th>
+				<th class="col">Conversion</th>
+				<th class="col">Asked on</th>				
+			</tr>
+			{% for item in calls %}		
+			<tr>
+				<td class="col">{{ item.input_currency }}</td>
+				<td class="col">{{ item.output_currency }}</td>
+				<td class="col">{{ item.conversion }}</td>
+				<td class="col">{{ item.asked_on }}</td>				
+			</tr>			
+			{% endfor %}
+		</table>			
+	</div>
+	{% else %}
+	<div>
+		No available data in database
+	</div>
+	{% endif %}
+</div>
+{% endblock %}
