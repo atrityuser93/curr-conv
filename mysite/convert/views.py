@@ -9,7 +9,7 @@ from django.urls import reverse_lazy
 
 from django.views.generic import ListView
 
-from mysite.settings import API_KEY
+from django.conf import settings
 
 from .forms import CurrencyConvertForm, CurrencyTickerDelete, CurrencyConvertDelete
 from .forms import CurrencyConvertDisplayForm
@@ -38,22 +38,23 @@ def home(request):
                                        output_currency=str(output_curr_symbol.code),
                                        )
             conv_obj.convert(url='http://data.fixer.io/api/latest',
-                             api_key=API_KEY)
+                             api_key=settings.API_KEY)
             # logging.info('home: convert object input_currency: %s{}, '
             #              'output_currency: %s{}'.format(conv_obj.input_currency,
             #                                             conv_obj.output_currency))
             # logging.info(conv_obj.input_currency)
             # logging.info(conv_obj.output_currency)
-            conv_obj.save()
+            # conv_obj.save()
 
             logging.info('{} {} is {} {}'.format(conv_obj.input_value, conv_obj.input_currency,
                                                  conv_obj.output_value, conv_obj.output_currency))
 
-            # form = CurrencyConvertForm(data={'input_currency': CountryCodes.objects.all().get(pk=input_curr_symbol)})
-            form = CurrencyConvertForm(data={'input_currency': input_curr_symbol.code,
-                                             'input_value': conv_obj.input_value,
-                                             'output_currency': output_curr_symbol.code,
-                                             'output': conv_obj.output_value})
+            # form = CurrencyConvertForm(data={'input_currency':
+            # CountryCodes.objects.all().get(pk=input_curr_symbol)})
+            # form = CurrencyConvertForm(data={'input_currency': input_curr_symbol.code,
+            #                                  'input_value': conv_obj.input_value,
+            #                                  'output_currency': output_curr_symbol.code,
+            #                                  'output': conv_obj.output_value})
             # form.cleaned_data["output_value"] = conv_obj.output_value
             form = CurrencyConvertDisplayForm(instance=conv_obj)
             logging.info('{}'.format(vars(form)))
