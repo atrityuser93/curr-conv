@@ -93,11 +93,3 @@ def convert_currency(request, payload: ConvertSchema = Form(...)):
                  }
 
 
-# class FetchSchema(Schema):
-#     url: str = Fi
-
-
-@router.get('/symbols/fetch')
-def fetch_symbols(request):
-    """fetch all symbols from fixer.io using api"""
-    url_val = 'http://data.fixer.io/api/symbols'

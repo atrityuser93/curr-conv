@@ -3,9 +3,7 @@ import requests, logging
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.db import IntegrityError
-# from django.utils import timezone
 from django.urls import reverse_lazy
-# from django.db
 
 from django.views.generic import ListView
 
@@ -110,7 +108,7 @@ def fetch_currency_symbols(request):
     # url_val to be made dynamic later -
     url_val = 'http://data.fixer.io/api/symbols'
     # use `requests` to fetch value from API
-    api_response = requests.get(url=url_val, params={'access_key': API_KEY})
+    api_response = requests.get(url=url_val, params={'access_key': settings.API_KEY})
     # get json objects in response (provided api provides results as json objects)
     response = api_response.json()
 
