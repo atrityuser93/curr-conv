@@ -79,7 +79,7 @@ class CurrencyConvert(models.Model):
     input_value = models.FloatField(default=1.0)
     output_value = models.FloatField(default=0.0)
     conversion = models.FloatField(default=1.0)
-    is_converted = models.BooleanField(default=False)
+    _is_converted = models.BooleanField(default=False)
     asked_on = models.DateTimeField(default=timezone.now)
 
     # self.convert()
@@ -91,7 +91,7 @@ class CurrencyConvert(models.Model):
         # logging.info('models: %s{} and %s{}'.format(self.input_currency, self.output_currency))
         return super(CurrencyConvert, self).save(*args, **kwargs)
 
-    def convert(self, url, api_key):
+    def convert(self, url, api_key, **kwargs):
         """Implements currency conversion logic between input and output currencies"""
         # fetch conversion rates to EUR
         # logging.info('models: In type: {} Out type {}'.format(type(curr_in), type(curr_out)))
@@ -102,17 +102,20 @@ class CurrencyConvert(models.Model):
         self.conversion = currency_in.to_EUR / currency_out.to_EUR
 
         self.convert_currency()         # perform currency conversion
-        self.save()                     # save object after conversion
+        self.save(**kwargs)             # save object after conversion
 
         return self
 
     def convert_currency(self):
         """convert between currency values"""
         self.output_value = self.conversion * self.input_value
-        self.is_converted = True
+        self._is_converted = True
 
     def converted(self):
         return self.output_value
+
+    def is_converted(self):
+        return self._is_converted
 
     def _get_conversion_rates(self, url, api_key) -> (ExchangeRates, ExchangeRates):
         """use fixer.io APIs to fetch latest conversion rates (once a day)"""
