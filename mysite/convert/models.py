@@ -117,6 +117,10 @@ class CurrencyConvert(models.Model):
     def is_converted(self):
         return self._is_converted
 
+    def dict(self):
+        """return class instance as a dictionary of key value pairs"""
+        return self.__dict__
+
     def _get_conversion_rates(self, url, api_key) -> (ExchangeRates, ExchangeRates):
         """use fixer.io APIs to fetch latest conversion rates (once a day)"""
 

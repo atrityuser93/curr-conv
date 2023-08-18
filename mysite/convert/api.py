@@ -1,5 +1,11 @@
-from ninja import Router, Schema, Form
+import logging
+
+from typing import Optional
+from pydantic import Field
+
+from ninja import Router, Schema, Form, Query
 from django.conf import settings
+from django.db.models import Q
 
 from .models import CountryCodes, CurrencyConvert
 
@@ -15,11 +21,27 @@ def currency_symbols_list(request):
     return 200, result
 
 
-@router.get('/symbols/{currency_code}')
-def currency_name(request, currency_code: str):
+class SymbolsFilterSchema(Schema):
+    currency: Optional[str] = Field(alias='currency')
+    code: Optional[str] = Field(default=None, alias='code')
+
+
+@router.get('/symbols/{code}')
+def currency_name(request, code: str):
     """provide currency name for a given currency code"""
-    obj = CountryCodes.objects.get(code=currency_code)
-    return 200, {'code': currency_code, 'name': obj.currency}
+    obj = CountryCodes.objects.get(code=code)
+    return 200, {'code': obj.code, 'name': obj.currency}
+
+
+@router.get('/symbols')
+def currency_code(request, filters: SymbolsFilterSchema = Query(...)):
+    """Provide currency code(s) for given country name(s)/currency name(s)"""
+    query = CountryCodes.objects.filter(currency__contains=filters.currency).all()
+    # logging.info(f"output: {objs}")
+    if filters.code is not None:
+        q = Q(code__contains=filters.code)
+        query = query.filter(q)
+    return 200, {'results': {i_obj.currency: i_obj.code for i_obj in query}}
 
 
 class ConvertSchema(Schema):
@@ -71,15 +93,11 @@ def convert_currency(request, payload: ConvertSchema = Form(...)):
                  }
 
 
-class SymbolsFilterSchema(Schema):
-    currency: Optional[str]
-    code: Optional[str]
-    # category__in: List[str] = Field(None, alias="categories")
+# class FetchSchema(Schema):
+#     url: str = Fi
 
 
-@router.get('/filter')
-def events(request, filters: SymbolsFilterSchema = Query(...)):
-    curr = CountryCodes.objects.all()
-    curr = filters.code(curr)
-    # {'filters': filters.dict()}
-    return curr
+@router.get('/symbols/fetch')
+def fetch_symbols(request):
+    """fetch all symbols from fixer.io using api"""
+    url_val = 'http://data.fixer.io/api/symbols'
