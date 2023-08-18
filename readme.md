@@ -25,8 +25,16 @@
 4. Run all database migrations to get ready to run the Django application by running `python manage.py migrate` from inside the outermost Django folder folder
 5. Before running the Django development server you will need to register with [Fixer.io](http://data.fixer.io) to obtain an API for use with this application.
 6. Copy and paste the API key into the `myproject/mysite/settings.py` and assign to a variable `API_KEY`
-7. You can get your application up and running using the command `python manage.py runserver`
-8. You can access the homepage at the default local server `127.0.0.1:8000/converter/` 
+7. Get your application up and running using the command `python manage.py runserver`
+8. Access the homepage at the default local server `127.0.0.1:8000/converter/`
+9. The documentation for the API is accessible at `127.0.0.1:8000/api/docs` when the application is running. This page provides an overview all available APIs
+10. Each API URL can be tested either on this page, or by using external API testing platforms like [Postman](https://www.postman.com/)
+
+## August 18, 2023
+- This Project stands complete
+- Complete APIs for fetching currency names, symbols and conversion with raw data/form data
+- APIs cover all (potentially) externally accessible parts of the application
+
 
 ## August 17, 2023
 - Complete working Currency Converter without full API
