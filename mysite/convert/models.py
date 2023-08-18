@@ -93,7 +93,7 @@ class CurrencyConvert(models.Model):
 
     def convert(self, url, api_key):
         """Implements currency conversion logic between input and output currencies"""
-        # fetch conversion rates
+        # fetch conversion rates to EUR
         # logging.info('models: In type: {} Out type {}'.format(type(curr_in), type(curr_out)))
         # logging.info('models: In: {}, Out: {}'.format(curr_in, curr_out))
         currency_in, currency_out = self._get_conversion_rates(url=url, api_key=api_key)
@@ -101,7 +101,8 @@ class CurrencyConvert(models.Model):
         # use EUR as base currency (Determined by API capabilities)
         self.conversion = currency_in.to_EUR / currency_out.to_EUR
 
-        self.convert_currency()
+        self.convert_currency()         # perform currency conversion
+        self.save()                     # save object after conversion
 
         return self
 

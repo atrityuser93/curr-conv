@@ -44,17 +44,10 @@ def home(request):
             #                                             conv_obj.output_currency))
             # logging.info(conv_obj.input_currency)
             # logging.info(conv_obj.output_currency)
-            # conv_obj.save()
 
             logging.info('{} {} is {} {}'.format(conv_obj.input_value, conv_obj.input_currency,
                                                  conv_obj.output_value, conv_obj.output_currency))
 
-            # form = CurrencyConvertForm(data={'input_currency':
-            # CountryCodes.objects.all().get(pk=input_curr_symbol)})
-            # form = CurrencyConvertForm(data={'input_currency': input_curr_symbol.code,
-            #                                  'input_value': conv_obj.input_value,
-            #                                  'output_currency': output_curr_symbol.code,
-            #                                  'output': conv_obj.output_value})
             # form.cleaned_data["output_value"] = conv_obj.output_value
             form = CurrencyConvertDisplayForm(instance=conv_obj)
             logging.info('{}'.format(vars(form)))
