@@ -60,8 +60,26 @@ def convert_currency(request, payload: ConvertSchema = Form(...)):
                if key in needed_keys}
     conv_obj = CurrencyConvert.objects.create(**options)
     conv_obj.convert(kwargs['api_url'], kwargs['api_key'])
+
     return 200, {'success': conv_obj.is_converted(),
-                 'value': conv_obj.output_value}
+                 'input': {'currency': conv_obj.input_currency,
+                           'value': conv_obj.input_value
+                           },
+                 'output': {'currency': conv_obj.output_currency,
+                            'value': conv_obj.output_value
+                            }
+                 }
 
 
+class SymbolsFilterSchema(Schema):
+    currency: Optional[str]
+    code: Optional[str]
+    # category__in: List[str] = Field(None, alias="categories")
 
+
+@router.get('/filter')
+def events(request, filters: SymbolsFilterSchema = Query(...)):
+    curr = CountryCodes.objects.all()
+    curr = filters.code(curr)
+    # {'filters': filters.dict()}
+    return curr
