@@ -50,7 +50,7 @@ def home(request):
 
             # form.cleaned_data["output_value"] = conv_obj.output_value
             form = CurrencyConvertDisplayForm(instance=conv_obj)
-            logging.info('{}'.format(vars(form)))
+            # logging.info('{}'.format(vars(form)))
 
             return render(request, template_name='converter/home.html',
                           context={'form': form, 'complete': True})
