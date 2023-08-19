@@ -1,6 +1,9 @@
+import sys, os
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+
 from django.test import TestCase
 
-from ..convert.models import CountryCodes
+from convert.models import CountryCodes
 
 
 class CountryCodeTest(TestCase):
