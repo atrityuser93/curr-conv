@@ -91,7 +91,7 @@ class CurrencyConvert(models.Model):
         # logging.info('models: %s{} and %s{}'.format(self.input_currency, self.output_currency))
         return super(CurrencyConvert, self).save(*args, **kwargs)
 
-    def convert(self, url, api_key, **kwargs):
+    def convert(self, url='', api_key='', **kwargs):
         """Implements currency conversion logic between input and output currencies"""
         # fetch conversion rates to EUR
         # logging.info('models: In type: {} Out type {}'.format(type(curr_in), type(curr_out)))
@@ -174,7 +174,7 @@ class CurrencyConvert(models.Model):
             # non-existing row and add to db
             logging.info('query_or_create(data does not exist) '
                          'Creating new object for symbol {}'.format(symbol))
-            response = self._request_api_call(url_val=url_val, symbol=symbol, api_key=api_key)
+            # response = self._request_api_call(url_val=url_val, symbol=symbol, api_key=api_key)
             # new ExchangeRates obj
             curr_obj = CountryCodes.objects.all().get(pk=symbol)
             objs = ExchangeRates(code=curr_obj.code, currency=curr_obj.currency)
