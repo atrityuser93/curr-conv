@@ -59,6 +59,9 @@
 - use Django-Ninja for APIs on function-based views in Django
 
 
+## Selenium for automated testing of web applications:
+- This repository uses Selenium for testing the web application-browser interface
+- Run `python manage.py test` from the outermost project directory to run unit test provided in the `tests` package 
 
 
 
