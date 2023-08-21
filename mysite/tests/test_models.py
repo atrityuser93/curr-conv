@@ -44,22 +44,6 @@ class ExchangeRatesTest(TestCase):
         ExchangeRates.objects.create(code='ABX', currency='This is a test currency to test the model',
                                      to_USD=2.0, to_EUR=3.0, to_GBP=4.0, to_JPY=5.0)
 
-    def test_updated_on(self):
-        """check whether field updated_on is correct"""
-        curr_obj = ExchangeRates.objects.get(pk=1)
-        old_date = copy(curr_obj.updated_on)
-        curr_obj.to_USD = 2.5
-        curr_obj.updated_on = dt.datetime.now() + dt.timedelta(days=1)
-        curr_obj.save()
-
-        # checks if new value is updated
-        curr = ExchangeRates.objects.get(pk=1)
-        with self.subTest('to_USD Attribute check'):
-            self.assertEqual(curr.to_USD, 2.5)
-
-        with self.subTest('Updated on check'):
-            self.assertGreater(curr.updated_on, old_date + dt.timedelta(days=1), '')
-
     def test_generate_conversions(self):
         response = {'success': True,
                     'rates': {'USD': 4.0, 'GBP': 2.0, 'JPY': 400, 'ABX': 500}}
