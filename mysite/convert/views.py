@@ -25,11 +25,7 @@ def home(request):
             input_curr_symbol = form.cleaned_data['input_currency']
             output_curr_symbol = form.cleaned_data['output_currency']
             input_value = form.cleaned_data['input_value']
-            # logging.info('Input currency: {} and '
-            #              'Output currency: {}'.format(input_curr_symbol,
-            #                                           output_curr_symbol))
-            logging.info('Input type: {} Output type: {}'.format(type(input_curr_symbol),
-                                                                 type(output_curr_symbol)))
+
             # create conversion object (for storing call in db)
             conv_obj = CurrencyConvert(input_value=input_value,
                                        input_currency=str(input_curr_symbol.code),
@@ -37,18 +33,12 @@ def home(request):
                                        )
             conv_obj.convert(url='http://data.fixer.io/api/latest',
                              api_key=settings.API_KEY)
-            # logging.info('home: convert object input_currency: %s{}, '
-            #              'output_currency: %s{}'.format(conv_obj.input_currency,
-            #                                             conv_obj.output_currency))
-            # logging.info(conv_obj.input_currency)
-            # logging.info(conv_obj.output_currency)
 
             logging.info('{} {} is {} {}'.format(conv_obj.input_value, conv_obj.input_currency,
                                                  conv_obj.output_value, conv_obj.output_currency))
 
             # form.cleaned_data["output_value"] = conv_obj.output_value
             form = CurrencyConvertDisplayForm(instance=conv_obj)
-            # logging.info('{}'.format(vars(form)))
 
             return render(request, template_name='converter/home.html',
                           context={'form': form, 'complete': True})
@@ -125,7 +115,6 @@ def fetch_currency_symbols(request):
                 obj = CountryCodes.objects.create(code=i_symbol,
                                                   currency=i_currency,
                                                   )
-                # logging.info('After creation {}: {}'.format(obj.code, obj.currency))
                 added_objs_list.append(obj)
                 # boolean_list.append(created)
             except IntegrityError:
