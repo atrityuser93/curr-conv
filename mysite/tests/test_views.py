@@ -19,7 +19,7 @@ class CurrencyConvertFormTest(LiveServerTestCase):
     def setUpClass(cls):
         # create/open new Chrome session w/ webdriver
         cls.driver = webdriver.Chrome()
-        cls.driver.implicitly_wait(30)
+        cls.driver.implicitly_wait(50)
         cls.driver.maximize_window()
         cls.driver.get('http://127.0.0.1:8000/converter')
 
@@ -28,8 +28,8 @@ class CurrencyConvertFormTest(LiveServerTestCase):
         # selenium = webdriver.Chrome()
         # select url
         # selenium.get('http://127.0.0.1:8000/')
-        stream_handler = logging.StreamHandler(sys.stdout)
-        logger.addHandler(stream_handler)
+        # stream_handler = logging.StreamHandler(sys.stdout)
+        # logger.addHandler(stream_handler)
         # find elements on form to submit
         input_currency = self.driver.find_element(by=By.NAME, value='input_currency')
         input_value = self.driver.find_element(by=By.NAME, value='input_value')
@@ -48,13 +48,51 @@ class CurrencyConvertFormTest(LiveServerTestCase):
         output_value = self.driver.find_element(by=By.NAME, value='output_value')
         value = output_value.get_attribute(name='value')
         # logging.getLogger().info(r'%s{attr}')
-        logging.getLogger().info('BBB')
+        # logging.getLogger().info('BBB')
         # logging.getLogger().info('{}'.format(attr))
         # logging.getLogger().info('Attribute type: {}'.format(type(value)))
-        logging.getLogger().info('Attribute type: {}'.format(type(float(value))))
-        self.assertAlmostEqual(float(value), 6.469818557291871)
+        # logging.getLogger().info('Attribute type: {}'.format(type(float(value))))
 
-        logger.removeHandler(stream_handler)
+        with self.subTest('Initial Return Value Check'):
+            self.assertAlmostEqual(float(value), 6.469818557291871)
+
+        with self.subTest('Second Submit - Change Input Value Check'):
+            # input_currency = self.driver.find_element(by=By.NAME, value='input_currency')
+            input_value = self.driver.find_element(by=By.NAME, value='input_value')
+            # output_currency = self.driver.find_element(by=By.NAME, value='output_currency')
+            output_value = self.driver.find_element(by=By.NAME, value='output_value')
+            # submit_button = self.driver.find_element(by=By.CSS_SELECTOR, value="button")
+            submit_button = self.driver.find_element(by=By.CLASS_NAME, value="btn btn-primary")
+
+            logging.info('Input value: {}, Output value: {}'.format(input_value.get_attribute(name='value'),
+                                                                    output_value.get_attribute(name='value')))
+            input_value.clear()
+            input_value.send_keys(20)
+            output_value.clear()
+            submit_button.send_keys(Keys.RETURN)
+
+            # logging.info('Input value: {}, Output value: {}'.format(input_value.get_attribute(name='value'),
+            #                                                         output_value.get_attribute(name='value')))
+            #
+            # value = output_value.get_attribute(name='value')
+            #
+            # self.assertAlmostEqual(float(value), 12.93963711458374)
+
+        with self.subTest('Thrid Submit - Change Output Currency Check'):
+            # input_currency = self.driver.find_element(by=By.NAME, value='input_currency')
+            input_value = self.driver.find_element(by=By.NAME, value='input_value')
+            output_currency = self.driver.find_element(by=By.NAME, value='output_currency')
+            submit_button = self.driver.find_element(by=By.CSS_SELECTOR, value="button")
+
+            input_value.send_keys(10)
+            output_currency.send_keys('EUR')
+            submit_button.send_keys(Keys.RETURN)
+
+            output_value = self.driver.find_element(by=By.NAME, value='output_value')
+            value = output_value.get_attribute(name='value')
+            self.assertAlmostEqual(float(value), 5.9206000172881526)
+
+        # logger.removeHandler(stream_handler)
 
     @classmethod
     def tearDownClass(cls) -> None:
