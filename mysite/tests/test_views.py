@@ -22,12 +22,15 @@ class CurrencyConvertFormTest(LiveServerTestCase):
         cls.driver.implicitly_wait(35)
         cls.driver.maximize_window()
         cls.driver.get('http://127.0.0.1:8000/converter')
+        cls.driver.get(cls.driver.live_server_url)
 
     def test_form(self):
         # set webdriver for browser
         # selenium = webdriver.Chrome()
         # select url
         # selenium.get('http://127.0.0.1:8000/')
+        # use to access Django test session URL (for a closed session and independent session)
+        # self.driver.get(f"{self.live_server_url}/login/")
         # stream_handler = logging.StreamHandler(sys.stdout)
         # logger.addHandler(stream_handler)
         # find elements on form to submit
