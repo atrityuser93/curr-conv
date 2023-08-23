@@ -135,3 +135,29 @@ class ExchangeRatesDBTest(TransactionTestCase):
         for i_val in test_values:
             with self.subTest(i_val[0]):
                 self.assertAlmostEqual(getattr(obj, i_val[1]), i_val[2])
+
+
+class CurrencyConvertDBTest(TransactionTestCase):
+    fixtures = ['mod.json']
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        super().tearDownClass()
+
+    def test_currency_convert_db(self):
+        """Test whether the ConvertCurrency model db is present in test_db"""
+        obj = CurrencyConvert.objects.get(pk=6)
+
+        tests = [('Input Currency Check', 'input_currency', 'AUD'),
+                 ('Output Currency Check', 'output_currency', 'AED')]
+
+        for i_val in tests:
+            with self.subTest(i_val[0]):
+                self.assertEqual(getattr(obj, i_val[1]), i_val[2])
+
+        with self.subTest('Conversion Factor Check'):
+            self.assertAlmostEqual(obj.conversion, 2.3778669025433716)
