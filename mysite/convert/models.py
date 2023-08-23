@@ -62,7 +62,10 @@ class ExchangeRates(models.Model):
             self.to_EUR = 1 / sym_per_eur
             self.to_GBP = gbp__sym
             self.to_JPY = jpy__sym
-            logging.info('generate_conversion: Update objects. Not Saved')
+            self.updated_on = timezone.now()
+            logging.info('generate_conversion: Update objects. '
+                         'Not Saved. \n Updated on: {}'.format(self.updated_on))
+            # self.save(update_fields=['to_USD', 'to_EUR', 'to_GBP', 'to_JPY', 'updated_on'])
 
         else:
             logging.info('API call unsuccessful. Error: {} and Error code: {}'.format(response["error"]["info"],
@@ -167,6 +170,7 @@ class CurrencyConvert(models.Model):
                 # objs = generate_conversions(response, symbol, old_obj=currency_query.values())
                 objs.save()  # save updated object
                 logging.info('query_or_create (data is old): objs {}'.format(type(objs)))
+                logging.info('query_or_create (data is old): Updated on {}'.format(objs.updated_on))
                 return objs
 
         else:
