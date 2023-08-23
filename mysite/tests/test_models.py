@@ -4,7 +4,7 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from copy import copy
 import datetime as dt
 
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 from django.utils import timezone
 
 from convert.models import CountryCodes         # works only because of above hack changing sys.apth
@@ -87,4 +87,51 @@ class CurrencyConvertTest(TestCase):
             self.assertEqual(conv.converted(), 0.08)
 
 
+class CountryCodesDBTest(TransactionTestCase):
+    fixtures = ['mod.json']
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        super().tearDownClass()
+
+    def test_country_code_db(self):
+        """test whether country codes are present in db
+        loaded with data from fixtures"""
+        obj = CountryCodes.objects.get(pk='AUD')
+
+        with self.subTest('Test Country Code'):
+            self.assertEqual(obj.code, 'AUD')
+
+        with self.subTest('Test Currency Name'):
+            self.assertEqual(obj.currency, 'Australian Dollar')
+
+
+class ExchangeRatesDBTest(TransactionTestCase):
+    fixtures = ['mod.json']
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        super().tearDownClass()
+
+    def test_exchage_rates(self):
+        obj = ExchangeRates.objects.get(pk=5)
+
+        with self.subTest('Test Country Code'):
+            self.assertEqual(obj.code, 'AUD')
+
+        test_values = [('Test USD Exchange Rate', 'to_USD', 0.644705481278579),
+                       ('Test Euro Exchange Rate', 'to_EUR', 0.5939254492897542),
+                       ('Test Pound Sterling Exchange Rate', 'to_GBP', 0.5060619000981759),
+                       ('Test JPY Exchange Rate', 'to_JPY', 93.89332445612763)]
+
+        for i_val in test_values:
+            with self.subTest(i_val[0]):
+                self.assertAlmostEqual(getattr(obj, i_val[1]), i_val[2])
