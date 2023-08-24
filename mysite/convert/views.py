@@ -89,7 +89,8 @@ class ConvertCallsView(ListView):
     context_object_name = 'calls'
 
     def get_queryset(self):
-        return super().get_queryset()
+        queryset = super().get_queryset()
+        return queryset.order_by('-asked_on')
 
 
 def fetch_currency_symbols(request):

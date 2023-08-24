@@ -25,8 +25,8 @@ Locally Called Exchange Rates
 			</tr>
 			{% for item in calls %}		
 			<tr>
-				<td class="col">{{ item.input_currency }}</td>
-				<td class="col">{{ item.output_currency }}</td>
+				<td class="col">{{ item.input_value }} {{ item.input_currency }}</td>
+				<td class="col">{{item.output_value}} {{ item.output_currency }}</td>
 				<td class="col">{{ item.conversion }}</td>
 				<td class="col">{{ item.asked_on }}</td>				
 			</tr>			
