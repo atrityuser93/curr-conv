@@ -185,7 +185,8 @@ class AvailableExchangeRatesView(ListView):
     context_object_name = 'rates'
     
     def get_queryset(self):
-        return super().get_queryset()
+        queryset = super().get_queryset()
+        return queryset.order_by('code')
     
 
 # create object and save object to db
