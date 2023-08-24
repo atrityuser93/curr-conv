@@ -28,10 +28,10 @@ Locally Available Exchange Rates
 			{% for item in rates %}		
 			<tr>
 				<td class="col">{{ item.code }}</td>
-				<td class="col">{{ item.to_USD }}</td>
-				<td class="col">{{ item.to_EUR }}</td>
-				<td class="col">{{ item.to_GBP }}</td>
-				<td class="col">{{ item.to_JPY }}</td>
+				<td class="col">{{ item.to_USD|floatformat:2 }}</td>
+				<td class="col">{{ item.to_EUR|floatformat:2 }}</td>
+				<td class="col">{{ item.to_GBP|floatformat:2 }}</td>
+				<td class="col">{{ item.to_JPY|floatformat:2 }}</td>
 				<td class="col">{{ item.updated_on }}</td>
 			</tr>			
 			{% endfor %}
