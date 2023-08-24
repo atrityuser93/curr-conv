@@ -37,6 +37,7 @@
 ## August 24, 2023
 - Cosmetic imporvements to how list view is displayed and how results are stored (2 decimal rounding)
 - Complete Working Test suite implemented with Python unittest, Django Tests and Selenium (All tests passing) with custom dataset
+- Potential Feature Addition(s): Search for Exchange Rates, Search/Display Historical Changes in Rates
 
 ## August 21, 2023
 - Use [Selenium](https://pypi.org/project/selenium/) to write automated web browser tests for the application in conjunction with Django Tests.
