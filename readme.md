@@ -29,11 +29,14 @@
 8. Access the homepage at the default local server `127.0.0.1:8000/converter/`
 9. The documentation for the API is accessible at `127.0.0.1:8000/api/docs` when the application is running. This page provides an overview all available APIs
 10. Each API URL can be tested either on this page, or by using external API testing platforms like [Postman](https://www.postman.com/)
-11. Run automated browser test by running `python manage.py test` in the Powershell command line after starting a server session (by running `python manage.py runserver`) in another command line session. 
 
 ## Selenium for automated testing of web applications:
 - This repository uses Selenium for testing the web application-browser interface
 - Run `python manage.py test` from the outermost project directory to run unit test provided in the `tests` package 
+
+## August 24, 2023
+- Cosmetic imporvements to how list view is displayed and how results are stored (2 decimal rounding)
+- Complete Working Test suite implemented with Python unittest, Django Tests and Selenium (All tests passing) with custom dataset
 
 ## August 21, 2023
 - Use [Selenium](https://pypi.org/project/selenium/) to write automated web browser tests for the application in conjunction with Django Tests.
