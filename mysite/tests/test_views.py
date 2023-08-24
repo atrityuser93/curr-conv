@@ -86,7 +86,6 @@ class CurrencyConvertFormTest(LiveServerTestCase):
 
         with self.subTest('Second Submit - Change Input Value Check'):
             input_value = self.driver.find_element(by=By.NAME, value='input_value')
-            output_value = self.driver.find_element(by=By.NAME, value='output_value')
             submit_button = self.driver.find_element(by=By.XPATH, value="//button[@type='submit']")
             # logging.info('Input value: {}, Output value: {}'.format(input_value.get_attribute(name='value'),
             #                                                         output_value.get_attribute(name='value')))
@@ -104,38 +103,52 @@ class CurrencyConvertFormTest(LiveServerTestCase):
 
             self.assertAlmostEqual(float(value), round(obj.output_value, 2))
 
-#     #     with self.subTest('Third Submit - Change Output Currency Check'):
-#     #         # input_currency = self.driver.find_element(by=By.NAME, value='input_currency')
-#     #         input_value = self.driver.find_element(by=By.NAME, value='input_value')
-#     #         output_currency = self.driver.find_element(by=By.NAME, value='output_currency')
-#     #         submit_button = self.driver.find_element(by=By.CSS_SELECTOR, value="button")
-#     #
-#     #         input_value.clear()
-#     #         input_value.send_keys(20)
-#     #         output_currency.clear()
-#     #         output_currency.send_keys('EUR')
-#     #         submit_button.send_keys(Keys.RETURN)
-#     #
-#     #         # output_currency = self.driver.find_element(by=By.NAME, value='output_currency')
-#     #         new_output_value = self.driver.find_element(by=By.NAME, value='output_value')
-#     #         value = new_output_value.get_attribute(name='value')
-#     #
-#     #         self.assertAlmostEqual(float(value), 11.841200034576305)
-#     #
-#     #     with self.subTest('Fourth Submit - Change Input Currency Check'):
-#     #         input_currency = self.driver.find_element(by=By.NAME, value='input_currency')
-#     #         submit_button = self.driver.find_element(by=By.CSS_SELECTOR, value='button')
-#     #
-#     #         input_currency.clear()
-#     #         input_currency.send_keys('EUR')
-#     #         submit_button.send_keys(Keys.RETURN)
-#     #
-#     #         new_output_value = self.driver.find_element(by=By.NAME, value='output_value')
-#     #         value = new_output_value.get_attribute(name='value')
-#     #
-#     #         self.assertAlmostEqual(float(value), 20)
-#     #
-#     #     # logger.removeHandler(stream_handler)
+        with self.subTest('Third Submit - Change Input Value & Output Currency Check'):
+            input_value = self.driver.find_element(by=By.NAME, value='input_value')
+            output_currency = self.driver.find_element(by=By.NAME, value='output_currency')
+            submit_button = self.driver.find_element(by=By.XPATH, value="//button[@type='submit']")
+
+            input_value.clear()
+            input_value.send_keys(10)
+            output_currency.clear()
+            output_currency.send_keys('BDT')
+            submit_button.send_keys(Keys.RETURN)
+
+            new_output_value = self.driver.find_element(by=By.NAME, value='output_value')
+            value = new_output_value.get_attribute(name='value')
+
+            # get corresponding data from stored database
+            obj = CurrencyConvert.objects.filter(input_currency='USD',
+                                                 output_currency='BDT',
+                                                 input_value=10).order_by('-asked_on').first()
+
+            self.assertAlmostEqual(float(value), round(obj.output_value, 2))
+
+        with self.subTest('Fourth Submit - Change Input and Output Currency Check'):
+            input_currency = self.driver.find_element(by=By.NAME, value='input_currency')
+            input_value = self.driver.find_element(by=By.NAME, value='input_value')
+            output_currency = self.driver.find_element(by=By.NAME, value='output_currency')
+            submit_button = self.driver.find_element(by=By.XPATH, value="//button[@type='submit']")
+
+            input_currency.clear()
+            input_currency.send_keys('AUD')
+            # input_value.clear()
+            # input_value.send_keys(10)
+            output_currency.clear()
+            output_currency.send_keys('AED')
+            submit_button.send_keys(Keys.RETURN)
+
+            new_output_value = self.driver.find_element(by=By.NAME, value='output_value')
+            value = new_output_value.get_attribute(name='value')
+
+            # get corresponding data from stored database
+            obj = CurrencyConvert.objects.filter(input_currency='AUD',
+                                                 output_currency='AED',
+                                                 input_value=10).order_by('-asked_on').first()
+
+            self.assertAlmostEqual(float(value), round(obj.output_value, 2))
+
+        # logger.removeHandler(stream_handler)
 
 
 
