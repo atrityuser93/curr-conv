@@ -33,21 +33,6 @@ class CurrencyConvertFormTest(LiveServerTestCase):
         cls.driver.quit()
         super().tearDownClass()
 
-    # def test_currency_convert_db(self):
-    #     """Test whether the ConvertCurrency model db is present in test_db"""
-    #     self.driver.get(f"{self.live_server_url}/converter/")
-    #     obj = CurrencyConvert.objects.get(pk=6)
-    #
-    #     tests = [('Input Currency Check', 'input_currency', 'AUD'),
-    #              ('Output Currency Check', 'output_currency', 'AED')]
-    #
-    #     for i_val in tests:
-    #         with self.subTest(i_val[0]):
-    #             self.assertEqual(getattr(obj, i_val[1]), i_val[2])
-    #
-    #     with self.subTest('Conversion Factor Check'):
-    #         self.assertAlmostEqual(obj.conversion, 2.3778669025433716)
-
     def test_convert_form(self):
         # use to access Django test session URL (for a closed session and independent session)
         self.driver.get(f"{self.live_server_url}/convert")
@@ -154,6 +139,24 @@ class CurrencyConvertFormTest(LiveServerTestCase):
             self.assertAlmostEqual(float(value), round(obj.output_value, 2))
 
         # logger.removeHandler(stream_handler)
+
+
+class SearchTest(LiveServerTestCase):
+    fixtures = ['mod.json']
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # create/open new Chrome session w/ webdriver
+        cls.driver = webdriver.Chrome()
+        cls.driver.implicitly_wait(35)
+        cls.driver.maximize_window()
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.driver.quit()
+        super().tearDownClass()
+
     def test_code_search(self):
         self.driver.get(f"{self.live_server_url}/convert")
         self.driver.find_element(by=By.NAME, value='search_codes_query').send_keys('dollar')
