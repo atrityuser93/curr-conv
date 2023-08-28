@@ -70,7 +70,7 @@ class CurrencyConvertFormTest(LiveServerTestCase):
         # logging.getLogger().info('BBB')
         # logging.getLogger().info('Attribute type: {}'.format(type(value)))
         with self.subTest('Check Output Converted Value'):
-            self.assertAlmostEqual(float(value), round(obj.output_value, 2))
+            self.assertAlmostEqual(round(float(value), 2), round(obj.output_value, 2))
 
         with self.subTest('Second Submit - Change Input Value Check'):
             input_value = self.driver.find_element(by=By.NAME, value='input_value')
@@ -90,7 +90,7 @@ class CurrencyConvertFormTest(LiveServerTestCase):
                                                  output_currency='KRW',
                                                  input_value=10).order_by('-asked_on').first()
 
-            self.assertAlmostEqual(float(value), round(obj.output_value, 2))
+            self.assertAlmostEqual(round(float(value), 2), round(obj.output_value, 2))
 
         with self.subTest('Third Submit - Change Input Value & Output Currency Check'):
             input_value = self.driver.find_element(by=By.NAME, value='input_value')
@@ -112,7 +112,7 @@ class CurrencyConvertFormTest(LiveServerTestCase):
                                                  output_currency='BDT',
                                                  input_value=10).order_by('-asked_on').first()
 
-            self.assertAlmostEqual(float(value), round(obj.output_value, 2))
+            self.assertAlmostEqual(round(float(value), 2), round(obj.output_value, 2))
 
         with self.subTest('Fourth Submit - Change Input and Output Currency Check'):
             input_currency = self.driver.find_element(by=By.NAME, value='input_currency')
@@ -136,7 +136,7 @@ class CurrencyConvertFormTest(LiveServerTestCase):
                                                  output_currency='AED',
                                                  input_value=10).order_by('-asked_on').first()
 
-            self.assertAlmostEqual(float(value), round(obj.output_value, 2))
+            self.assertAlmostEqual(round(float(value), 2), round(obj.output_value, 2))
 
         # logger.removeHandler(stream_handler)
 

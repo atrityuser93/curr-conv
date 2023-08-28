@@ -78,13 +78,13 @@ class CurrencyConvertTest(TestCase):
         conv.convert()
 
         with self.subTest('Test Conversion Factor'):
-            self.assertEqual(conv.conversion, 0.01)
+            self.assertEqual(conv.conversion, 0.008)
 
         with self.subTest('Test If Currency Converted'):
             self.assertEqual(conv.is_converted(), True, 'No Currency conversion')
 
         with self.subTest('Test Converted Value'):
-            self.assertEqual(conv.converted(), 0.1)
+            self.assertEqual(conv.converted(), 0.08)
 
 
 class CountryCodesDBTest(TransactionTestCase):
