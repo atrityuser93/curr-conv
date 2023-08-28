@@ -29,7 +29,7 @@ class CountryCodes(models.Model):
 class ExchangeRates(models.Model):
     """db storing conversion values"""
     code = models.CharField(max_length=3)
-    currency = models.CharField(max_length=75)     # from_currency
+    currency = models.CharField(max_length=75, default='no name')     # from_currency
 
     to_USD = models.FloatField(default=0.0)     # conversion rate to USD for 1 from_currency
     to_EUR = models.FloatField(default=0.0)     # conversion rate to EUR for 1 from_currency
