@@ -146,47 +146,29 @@ class CurrencyConvert(models.Model):
         """query db for existing value, if emtpy create new object and add to db"""
 
         # check if currency exchange is in db
-        currency_query = ExchangeRates.objects.filter(code=symbol)
+        currency_query = ExchangeRates.objects.filter(code=symbol,
+                                                      updated_on__gt=updated_on).order_by("updated_on")
         if currency_query:
             # check if exchange rate is updated
-            currency_query_time = currency_query.filter(updated_on__gt=updated_on).order_by("updated_on")
-            logging.info('query_or_create (currency exists): currency_query_time {}'.format(type(currency_query_time)))
-
-            if currency_query_time:
-                # return relevant object if updated results are present
-                objs = currency_query_time.first()
-                logging.info('query_or_create (data exists): objs {}'.format(type(objs)))
-                return objs
-            else:
-                # return updated conversion object by getting updates through API call
-                response = self._request_api_call(url_val=url_val, symbol=symbol, api_key=api_key)
-                # symbol_obj = CountryCodes.objects.all().get(pk=symbol)
-                objs = currency_query.first()
-                objs = objs.generate_conversions(response, symbol=symbol)
-                # create empty exchange rate object here
-
-                # objs = ExchangeRates(code=symbol, currency=symbol_obj.currency)
-                # objs.conversions()
-                # objs = generate_conversions(response, symbol, old_obj=currency_query.values())
-                objs.save()  # save updated object
-                logging.info('query_or_create (data is old): objs {}'.format(type(objs)))
-                logging.info('query_or_create (data is old): Updated on {}'.format(objs.updated_on))
-                return objs
-
-        else:
-            # if query set is empty get latest conversion rate for
-            # non-existing row and add to db
-            logging.info('query_or_create(data does not exist) '
-                         'Creating new object for symbol {}'.format(symbol))
-            # response = self._request_api_call(url_val=url_val, symbol=symbol, api_key=api_key)
-            # new ExchangeRates obj
-            curr_obj = CountryCodes.objects.all().get(pk=symbol)
-            objs = ExchangeRates(code=curr_obj.code, currency=curr_obj.currency)
-            response = self._request_api_call(url_val=url_val, symbol=curr_obj.code, api_key=api_key)
-            objs = objs.generate_conversions(response, symbol=curr_obj.code)
-            # save new exchange obj
-            objs.save()
+            # currency_query_time = currency_query.filter(updated_on__gt=updated_on).order_by("updated_on")
+            objs = currency_query.first()
+            logging.info('query_or_create (updated rates exists): '
+                         'currency object {}'.format(objs))
             return objs
+
+        # if query set is empty get latest conversion rate for
+        # symbol and add to db
+        logging.info('query_or_create(data does not exist/data is old): '
+                     'creating new/updated record for {}'.format(symbol))
+        # response = self._request_api_call(url_val=url_val, symbol=symbol, api_key=api_key)
+        # new ExchangeRates obj
+        curr_obj = CountryCodes.objects.all().get(pk=symbol)
+        objs = ExchangeRates(code=curr_obj.code, currency=curr_obj.currency)
+        response = self._request_api_call(url_val=url_val, symbol=curr_obj.code, api_key=api_key)
+        objs = objs.generate_conversions(response, symbol=curr_obj.code)
+        # save new exchange obj
+        objs.save()
+        return objs
 
     @staticmethod
     def _request_api_call(url_val: str, symbol: str, api_key: str):
