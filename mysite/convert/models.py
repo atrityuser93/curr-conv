@@ -28,9 +28,7 @@ class CountryCodes(models.Model):
 
 class ExchangeRates(models.Model):
     """db storing conversion values"""
-    code = models.CharField(max_length=3)
-    currency = models.CharField(max_length=75, default='no name')     # from_currency
-
+    base = models.ForeignKey(CountryCodes, on_delete=models.CASCADE)
     to_USD = models.FloatField(default=0.0)     # conversion rate to USD for 1 from_currency
     to_EUR = models.FloatField(default=0.0)     # conversion rate to EUR for 1 from_currency
     to_GBP = models.FloatField(default=0.0)     # conversion rate to GBP for 1 from_currency
@@ -38,7 +36,7 @@ class ExchangeRates(models.Model):
     updated_on = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return self.currency
+        return self.code
 
     def generate_conversions(self, response, symbol: str):
         """convert JSON response to values that could be used
@@ -77,8 +75,8 @@ class ExchangeRates(models.Model):
 
 class CurrencyConvert(models.Model):
     """db to store different conversions - db of records"""
-    input_currency = models.CharField(max_length=8)
-    output_currency = models.CharField(max_length=8)
+    input_currency = models.ForeignKey(CountryCodes, on_delete=models.CASCADE, related_name='input_code')
+    output_currency = models.ForeignKey(CountryCodes, on_delete=models.CASCADE, related_name='output_code')
     input_value = models.FloatField(default=1.0)
     output_value = models.FloatField(default=0.0)
     conversion = models.FloatField(default=1.0)
