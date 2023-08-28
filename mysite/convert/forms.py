@@ -14,7 +14,7 @@ class CurrencyTickerDelete(forms.Form):
                                         )
 
 
-class CurrencyConvertDelete(forms.Form):
+class ExchangeRateDelete(forms.Form):
     """delete all exchange rate data"""
     delete_confirm = forms.BooleanField(label='confirm deletion',
                                         widget=forms.CheckboxInput(),
@@ -52,6 +52,13 @@ class CurrencyConvertDisplayForm(ModelForm):
         return conv
 
 
+class CurrencyConvertDeleteForm(forms.Form):
+    """delete all currency convert data"""
+    delete_confirm = forms.BooleanField(label='confirm deletion',
+                                        widget=forms.CheckboxInput(),
+                                        help_text='Please confirm deletion',
+                                        error_messages={'required': 'Please check box to confirm'},
+                                        )
 # class ConvertForm(ModelForm):
 #     """model-based form for currency conversion"""
 #

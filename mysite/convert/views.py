@@ -10,8 +10,8 @@ from django.views.generic import ListView
 
 from django.conf import settings
 
-from .forms import CurrencyConvertForm, CurrencyTickerDelete, CurrencyConvertDelete
-from .forms import CurrencyConvertDisplayForm
+from .forms import CurrencyConvertForm, CurrencyTickerDelete, ExchangeRateDelete
+from .forms import CurrencyConvertDisplayForm, CurrencyConvertDeleteForm
 from .models import CountryCodes, ExchangeRates, CurrencyConvert
 
 
@@ -51,6 +51,22 @@ def home(request):
 
     return render(request, template_name='converter/home.html',
                   context={'form': form, 'complete': False})
+
+
+def delete_convert_history(request):
+    """Delete complete history of all fetched conversions.
+    Only use for maintenance"""
+    form = CurrencyConvertDeleteForm()
+    if request.method == "POST":
+        if request.POST['delete_confirm']:
+            CurrencyConvert.objects.all().delete()
+            return redirect(reverse_lazy('convert-list'))
+
+        return render(request, template_name='converter/delete-conversions.html',
+                      context={'form': form})
+    return render(request, template_name='converter/delete-conversions.html',
+                  context={'form': form})
+
 
 
 class ConvertCallsView(ListView):
@@ -134,7 +150,7 @@ class AvailableCurrencyListView(ListView):
 
 def delete_exchange_rates(request):
     """delete all collected exchange rates"""
-    form = CurrencyConvertDelete()
+    form = ExchangeRateDelete()
     if request.method == 'POST':
         if request.POST['delete_confirm']:
             # delete all country codes in db
