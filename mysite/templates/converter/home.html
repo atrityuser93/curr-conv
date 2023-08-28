@@ -12,32 +12,34 @@ Homepage
 	{% else %}
 	Homepage contents go here
 	{% endif %}
-	<form action="." method="POST">
-		{% csrf_token %}
-		<div class="row align-items-center form-group">
-			<div class="col">
-				<label class="form-label">{{ form.input_currency.label }}</label>
-				{{ form.input_currency }}
+	<div class="container ms-4">
+		<form action="." method="POST">
+			{% csrf_token %}
+			<div class="row align-items-center form-group">
+				<div class="col">
+					<label class="form-label">{{ form.input_currency.label }}</label>
+					{{ form.input_currency }}
+				</div>
+				<div class="col">
+					<label class="form-label">{{ form.input_value.label }}</label>
+					{{ form.input_value }}
+				</div>		
+				<div class="col">
+					<label class="form-label">{{ form.output_currency.label }}</label>
+					{{ form.output_currency }}
+				</div>
+				{% if complete %}
+				<div class="col">
+					<label class="form-label">{{ form.output_value.label }}</label>
+					{{ form.output_value }}
+				</div>
+				{% endif %}
+				<div class="col pt-4">
+					{% bootstrap_button "Convert" button_type="submit" button_class="btn-primary" name="convert_submit" %}
+				</div>
 			</div>
-			<div class="col">
-				<label class="form-label">{{ form.input_value.label }}</label>
-				{{ form.input_value }}
-			</div>		
-			<div class="col">
-				<label class="form-label">{{ form.output_currency.label }}</label>
-				{{ form.output_currency }}
-			</div>
-			{% if complete %}
-			<div class="col">
-				<label class="form-label">{{ form.output_value.label }}</label>
-				{{ form.output_value }}
-			</div>
-			{% endif %}
-			<div class="col pt-4">
-				{% bootstrap_button "Convert" button_type="submit" button_class="btn-primary" name="convert_submit" %}
-			</div>
-		</div>
-		<!-- {% bootstrap_form form %} -->	
-	</form>
+			<!-- {% bootstrap_form form %} -->	
+		</form>
+	</div>	
 </div>
 {% endblock %}
