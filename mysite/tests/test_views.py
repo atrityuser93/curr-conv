@@ -5,6 +5,8 @@ from django.test import LiveServerTestCase, TransactionTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 import logging
 
@@ -46,7 +48,7 @@ class CurrencyConvertFormTest(LiveServerTestCase):
     #     with self.subTest('Conversion Factor Check'):
     #         self.assertAlmostEqual(obj.conversion, 2.3778669025433716)
 
-    def test_form(self):
+    def test_convert_form(self):
         # use to access Django test session URL (for a closed session and independent session)
         self.driver.get(f"{self.live_server_url}/convert")
         # self.driver.get("http://localhost:8081/converter/")
@@ -152,6 +154,25 @@ class CurrencyConvertFormTest(LiveServerTestCase):
             self.assertAlmostEqual(float(value), round(obj.output_value, 2))
 
         # logger.removeHandler(stream_handler)
+    def test_code_search(self):
+        self.driver.get(f"{self.live_server_url}/convert")
+        self.driver.find_element(by=By.NAME, value='search_codes_query').send_keys('dollar')
+        self.driver.find_element(by=By.ID, value='search_codes_submit').send_keys(Keys.RETURN)
+
+        wait = WebDriverWait(self.driver, 2)
+        results_title = wait.until(EC.visibility_of_element_located((By.ID, 'search_header'))).text
+
+        self.assertEqual(results_title, 'There are 23 currencies matching')
+
+    def test_exchange_rates_search(self):
+        self.driver.get(f"{self.live_server_url}/convert")
+        self.driver.find_element(by=By.NAME, value='search_rates_query').send_keys('dollar')
+        self.driver.find_element(by=By.ID, value='search_rates_submit').send_keys(Keys.RETURN)
+
+        wait = WebDriverWait(self.driver, 2)
+        results_title = wait.until(EC.visibility_of_element_located((By.ID, 'search_header'))).text
+
+        self.assertEqual(results_title, 'There are 3 currencies matching')
 
 
 
