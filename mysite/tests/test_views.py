@@ -48,7 +48,7 @@ class CurrencyConvertFormTest(LiveServerTestCase):
 
     def test_form(self):
         # use to access Django test session URL (for a closed session and independent session)
-        self.driver.get(f"{self.live_server_url}/converter/")
+        self.driver.get(f"{self.live_server_url}/convert")
         # self.driver.get("http://localhost:8081/converter/")
         # stream_handler = logging.StreamHandler(sys.stdout)
         # logger.addHandler(stream_handler)

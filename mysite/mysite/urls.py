@@ -23,7 +23,7 @@ from .api import api
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('converter/', include('convert.urls')),
+    path('', include('convert.urls')),
     path('api/', api.urls),
     ]
 
