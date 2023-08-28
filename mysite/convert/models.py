@@ -102,7 +102,7 @@ class CurrencyConvert(models.Model):
         currency_in, currency_out = self._get_conversion_rates(url=url, api_key=api_key)
 
         # use EUR as base currency (Determined by API capabilities)
-        self.conversion = round(currency_in.to_EUR / currency_out.to_EUR, 2)
+        self.conversion = currency_in.to_EUR / currency_out.to_EUR
 
         self.convert_currency()         # perform currency conversion
         self.save(**kwargs)             # save object after conversion
@@ -111,7 +111,7 @@ class CurrencyConvert(models.Model):
 
     def convert_currency(self):
         """convert between currency values"""
-        self.output_value = round(self.conversion * self.input_value, 2)
+        self.output_value = self.conversion * self.input_value
         self._is_converted = True
 
     def converted(self):
