@@ -166,10 +166,34 @@ class SearchExchangeRatesView(ListView):
     context_object_name = 'rates'
 
     def get_queryset(self):
-        search_query = self.request.GET.get('search_query')
+        search_query = self.request.GET.get('search_rates_query')
         rates = ExchangeRates.objects.filter(Q(code=search_query) |
                                              Q(currency__contains=search_query))
         return rates
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data()
+        context['result_count'] = self.get_queryset().count()
+        context['search_keyword'] = self.request.GET.get('search_rates_query')
+        return context
+
+
+class SearchCountryCodesView(ListView):
+    model = CountryCodes
+    template_name = 'converter/search_codes.html'
+    context_object_name = 'codes'
+
+    def get_queryset(self):
+        search_query = self.request.GET.get('search_codes_query')
+        codes = CountryCodes.objects.filter(Q(code__contains=search_query) |
+                                            Q(currency__contains=search_query))
+        return codes
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data()
+        context['result_count'] = self.get_queryset().count()
+        context['search_keyword'] = self.request.GET.get('search_codes_query')
+        return context
 
 # create object and save object to db
 # update existing object

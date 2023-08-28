@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}
+Search Results
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	{% if codes %}
+	<div class="ms-2">
+		<p><span id="search_header">There are {{ result_count }} currencies matching</span> <span class="text-primary">"{{ search_keyword }}"</span></p>		
+	</div>
+	<div class="container-fluid">
+		<table class="m-4">
+			<tr>
+				<th class="col pe-4">Country/Currency</th>
+				<th class="col ps-4">Code</th>
+			</tr>
+			{% for item in codes %}
+			<tr>
+				<td class="col pe-4">{{ item.currency }}</td>				
+				<td class="col ps-4">{{ item.code }}</td>
+			</tr>
+			{% endfor %}
+		</table>
+	</div>	
+	{% else %}
+	<div>
+		No entries matching "{{ search_keyword }}" were found. Please fetch rates to populate the database.
+	</div>
+	{% endif %}	
+</div>
+{% endblock %}

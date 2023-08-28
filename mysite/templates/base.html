@@ -48,12 +48,27 @@
     				</ul>
     			</div>
 			</div>
-		</nav>		
-		<div>
-			<form action="{% url 'rates-search' %}" class="d-flex">
-				<input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search_query">
-		        <button class="btn btn-outline-success" type="submit" id="search_submit">Search</button>
-			</form>	
+		</nav>			
+		{% endblock %}
+
+		{% block searchbar %}
+		<div class="container my-3">
+			<div class="row">
+				<div class="col">
+					<!-- Search for currency codes -->
+					<form action="{% url 'codes-search' %}" class="d-flex">
+						<input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search_codes_query">
+				        <button class="btn btn-outline-primary" type="submit" id="search_codes_submit">Search Currency Code</button>
+					</form>						
+				</div>
+				<div class="col">
+					<!-- Search for basic currency exchange rates -->
+					<form action="{% url 'rates-search' %}" class="d-flex">
+						<input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search_rates_query">
+				        <button class="btn btn-outline-primary" type="submit" id="search_rates_submit">Search Exchange Rates</button>
+					</form>	
+				</div>
+			</div>			
 		</div>
 		{% endblock %}
 

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}
+Search Results
+{% endblock %}
+
+{% block content %}
+<div>
+	{% if rates %}
+	<div class="ms-2">
+		<p><span id="search_header">There are {{ result_count }} currencies matching</span> <span class="text-primary">"{{ search_keyword }}"</span></p>		
+	</div>
+	<div>
+		{% for item in rates %}
+		<div class="card mt-2 mx-2">
+			<h5 class="card-title px-2 pt-1">{{ item.currency }} ({{ item.code }})</h5> 
+			<p class="card-subtitle mb-2 px-2 text-muted">updated on {{ item.updated_on }}</p>
+			<table class="card-text">
+				<tr>
+					<th class="col">USD</th>
+					<th class="col">EUR</th>
+					<th class="col">GBP</th>
+					<th class="col">JPY</th>
+				</tr>
+				<tr>					
+					<td class="col">{{ item.to_USD|floatformat:2 }}</td>
+					<td class="col">{{ item.to_EUR|floatformat:2 }}</td>
+					<td class="col">{{ item.to_GBP|floatformat:2 }}</td>
+					<td class="col">{{ item.to_JPY|floatformat:2 }}</td>					
+				</tr>
+			</table>		
+		</div>			
+		{% endfor %}
+		{% else %}
+		<div>
+			No entries matching "{{ search_keyword }}" were found. Please fetch rates to populate the database.
+		</div>
+		{% endif %}
+	</div>	
+</div>
+{% endblock %}
