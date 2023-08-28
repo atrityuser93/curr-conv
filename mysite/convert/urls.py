@@ -10,4 +10,5 @@ urlpatterns = [path('', views.home, name='convert-home'),
                path('rates/delete/', views.delete_exchange_rates, name='delete-rates'),
                path('rates/show/', views.AvailableExchangeRatesView.as_view(), name='rates-list'),
                path('show/', views.ConvertCallsView.as_view(), name='convert-list'),
+               path('rates/search/', views.SearchExchangeRatesView.as_view(), name='rates-search'),
                ]

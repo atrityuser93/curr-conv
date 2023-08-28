@@ -49,6 +49,12 @@
     			</div>
 			</div>
 		</nav>		
+		<div>
+			<form action="{% url 'rates-search' %}" class="d-flex">
+				<input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search_query">
+		        <button class="btn btn-outline-success" type="submit" id="search_submit">Search</button>
+			</form>	
+		</div>
 		{% endblock %}
 
 		{% block content %}

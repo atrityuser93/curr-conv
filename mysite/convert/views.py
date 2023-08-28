@@ -3,6 +3,7 @@ import requests, logging
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.db import IntegrityError
+from django.db.models import Q
 from django.urls import reverse_lazy
 
 from django.views.generic import ListView
@@ -50,36 +51,6 @@ def home(request):
 
     return render(request, template_name='converter/home.html',
                   context={'form': form, 'complete': False})
-
-
-# class ConvertView(CreateView):
-#     """class-based view to create a convert currency object"""
-#     form_class = ConvertForm
-#     success_url = reverse_lazy('convert-list')
-#     template_name = 'converter/convert.html'
-#
-#     def form_valid(self, form):
-#         """override class method when form.is_valid() is True"""
-#         logging.info('form_valid: form is valid')
-#         self.object = form.save(commit=False)
-#         self.object.convert(url='http://data.fixer.io/api/latest',
-#                             api_key=API_KEY)
-#
-#         logging.info('ConvertView: form.object type {}'.format(type(self.object)))
-#         self.object.save()
-#         return HttpResponseRedirect(self.get_success_url())
-#
-#     def is_valid(self):
-#         pass
-
-
-def initial_form_value():
-    """get values of your choosing to initialize form"""
-    # input_curr_sym
-    # output_curr_sym
-    # input_val
-    # output_val
-    return None
 
 
 class ConvertCallsView(ListView):
@@ -188,6 +159,17 @@ class AvailableExchangeRatesView(ListView):
         queryset = super().get_queryset()
         return queryset.order_by('code')
     
+
+class SearchExchangeRatesView(ListView):
+    model = ExchangeRates
+    template_name = 'converter/search_rates.html'
+    context_object_name = 'rates'
+
+    def get_queryset(self):
+        search_query = self.request.GET.get('search_query')
+        rates = ExchangeRates.objects.filter(Q(code=search_query) |
+                                             Q(currency__contains=search_query))
+        return rates
 
 # create object and save object to db
 # update existing object

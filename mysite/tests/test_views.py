@@ -56,7 +56,8 @@ class CurrencyConvertFormTest(LiveServerTestCase):
         input_currency = self.driver.find_element(by=By.NAME, value='input_currency')
         input_value = self.driver.find_element(by=By.NAME, value='input_value')
         output_currency = self.driver.find_element(by=By.NAME, value='output_currency')
-        submit_button = self.driver.find_element(by=By.XPATH, value="//button[@type='submit']")
+        submit_button = self.driver.find_element(by=By.XPATH, value="//button[@type='submit' and "
+                                                                    "@name='convert_submit']")
 
         # add input value in forms
         input_currency.send_keys('United States Dollar')
@@ -86,7 +87,8 @@ class CurrencyConvertFormTest(LiveServerTestCase):
 
         with self.subTest('Second Submit - Change Input Value Check'):
             input_value = self.driver.find_element(by=By.NAME, value='input_value')
-            submit_button = self.driver.find_element(by=By.XPATH, value="//button[@type='submit']")
+            submit_button = self.driver.find_element(by=By.XPATH, value="//button[@type='submit' and "
+                                                                        "@name='convert_submit']")
             # logging.info('Input value: {}, Output value: {}'.format(input_value.get_attribute(name='value'),
             #                                                         output_value.get_attribute(name='value')))
             input_value.clear()
@@ -106,7 +108,8 @@ class CurrencyConvertFormTest(LiveServerTestCase):
         with self.subTest('Third Submit - Change Input Value & Output Currency Check'):
             input_value = self.driver.find_element(by=By.NAME, value='input_value')
             output_currency = self.driver.find_element(by=By.NAME, value='output_currency')
-            submit_button = self.driver.find_element(by=By.XPATH, value="//button[@type='submit']")
+            submit_button = self.driver.find_element(by=By.XPATH, value="//button[@type='submit' and "
+                                                                        "@name='convert_submit']")
 
             input_value.clear()
             input_value.send_keys(10)
@@ -128,7 +131,7 @@ class CurrencyConvertFormTest(LiveServerTestCase):
             input_currency = self.driver.find_element(by=By.NAME, value='input_currency')
             input_value = self.driver.find_element(by=By.NAME, value='input_value')
             output_currency = self.driver.find_element(by=By.NAME, value='output_currency')
-            submit_button = self.driver.find_element(by=By.XPATH, value="//button[@type='submit']")
+            submit_button = self.driver.find_element(by=By.NAME, value='convert_submit')
 
             input_currency.clear()
             input_currency.send_keys('AUD')
