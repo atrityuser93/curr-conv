@@ -24,7 +24,7 @@ def home(request):
     if request.method == 'POST':
         form = CurrencyConvertForm(request.POST)
         if form.is_valid():
-            logging.info('Validated form')
+            # logging.info('Validated form')
             input_curr = form.cleaned_data['input_currency']
             output_curr = form.cleaned_data['output_currency']
             input_value = form.cleaned_data['input_value']
