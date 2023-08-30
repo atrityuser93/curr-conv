@@ -18,7 +18,7 @@ logger.level = logging.INFO
 
 
 class CurrencyConvertFormTest(LiveServerTestCase):
-    fixtures = ['mod.json']
+    fixtures = ['test_data.json']
 
     @classmethod
     def setUpClass(cls):
@@ -63,10 +63,17 @@ class CurrencyConvertFormTest(LiveServerTestCase):
         # compare output value with value stored in DB
         output_value = self.driver.find_element(by=By.NAME, value='output_value')
         value = output_value.get_attribute(name='value')
+
         # get corresponding data from stored database
-        obj = CurrencyConvert.objects.filter(input_currency='USD',
-                                             output_currency='KRW',
-                                             input_value=100).order_by('-asked_on').first()
+        usd = CountryCodes.objects.get(pk='USD').exchangerates_set.select_related().\
+            order_by('updated_on').first()
+        krw = CountryCodes.objects.get(pk='KRW').exchangerates_set.select_related().\
+            order_by('updated_on').first()
+
+        obj = CurrencyConvert(input_currency=usd,
+                              output_currency=krw,
+                              input_value=100)
+        obj.convert()
         # logging.getLogger().info('BBB')
         # logging.getLogger().info('Attribute type: {}'.format(type(value)))
         with self.subTest('Check Output Converted Value'):
@@ -74,66 +81,67 @@ class CurrencyConvertFormTest(LiveServerTestCase):
 
         with self.subTest('Second Submit - Change Input Value Check'):
             input_value = self.driver.find_element(by=By.NAME, value='input_value')
-            submit_button = self.driver.find_element(by=By.XPATH, value="//button[@type='submit' and "
-                                                                        "@name='convert_submit']")
-            # logging.info('Input value: {}, Output value: {}'.format(input_value.get_attribute(name='value'),
-            #                                                         output_value.get_attribute(name='value')))
             input_value.clear()
             input_value.send_keys(10)
-            submit_button.send_keys(Keys.RETURN)
-
+            self.driver.find_element(by=By.XPATH, value="//button[@type='submit' and "
+                                                        "@name='convert_submit']").send_keys(Keys.RETURN)
             new_output_value = self.driver.find_element(by=By.NAME, value='output_value')
             value = new_output_value.get_attribute(name='value')
 
             # get corresponding data from stored database
-            obj = CurrencyConvert.objects.filter(input_currency='USD',
-                                                 output_currency='KRW',
+            usd = CountryCodes.objects.get(pk='USD').exchangerates_set.select_related(). \
+                order_by('updated_on').first()
+            krw = CountryCodes.objects.get(pk='KRW').exchangerates_set.select_related(). \
+                order_by('updated_on').first()
+            obj = CurrencyConvert.objects.filter(input_currency=usd,
+                                                 output_currency=krw,
                                                  input_value=10).order_by('-asked_on').first()
 
             self.assertAlmostEqual(round(float(value), 2), round(obj.output_value, 2))
 
         with self.subTest('Third Submit - Change Input Value & Output Currency Check'):
             input_value = self.driver.find_element(by=By.NAME, value='input_value')
-            output_currency = self.driver.find_element(by=By.NAME, value='output_currency')
-            submit_button = self.driver.find_element(by=By.XPATH, value="//button[@type='submit' and "
-                                                                        "@name='convert_submit']")
-
             input_value.clear()
             input_value.send_keys(10)
-            output_currency.clear()
-            output_currency.send_keys('BDT')
-            submit_button.send_keys(Keys.RETURN)
+            self.driver.find_element(by=By.NAME, value='output_currency').send_keys('Bangladeshi Taka')
+            self.driver.find_element(by=By.XPATH, value="//button[@type='submit' and "
+                                                        "@name='convert_submit']").send_keys(Keys.RETURN)
 
             new_output_value = self.driver.find_element(by=By.NAME, value='output_value')
             value = new_output_value.get_attribute(name='value')
 
             # get corresponding data from stored database
-            obj = CurrencyConvert.objects.filter(input_currency='USD',
-                                                 output_currency='BDT',
+            usd = CountryCodes.objects.get(pk='USD').exchangerates_set.select_related(). \
+                order_by('updated_on').first()
+            bdt = CountryCodes.objects.get(pk='BDT').exchangerates_set.select_related(). \
+                order_by('updated_on').first()
+            obj = CurrencyConvert.objects.filter(input_currency=usd,
+                                                 output_currency=bdt,
                                                  input_value=10).order_by('-asked_on').first()
 
             self.assertAlmostEqual(round(float(value), 2), round(obj.output_value, 2))
 
         with self.subTest('Fourth Submit - Change Input and Output Currency Check'):
             input_currency = self.driver.find_element(by=By.NAME, value='input_currency')
-            input_value = self.driver.find_element(by=By.NAME, value='input_value')
+            # input_value = self.driver.find_element(by=By.NAME, value='input_value')
             output_currency = self.driver.find_element(by=By.NAME, value='output_currency')
             submit_button = self.driver.find_element(by=By.NAME, value='convert_submit')
 
-            input_currency.clear()
-            input_currency.send_keys('AUD')
-            # input_value.clear()
-            # input_value.send_keys(10)
-            output_currency.clear()
-            output_currency.send_keys('AED')
+            # input_currency.clear()
+            input_currency.send_keys('Australian Dollar')
+            output_currency.send_keys('Canadian Dollar')
             submit_button.send_keys(Keys.RETURN)
 
             new_output_value = self.driver.find_element(by=By.NAME, value='output_value')
             value = new_output_value.get_attribute(name='value')
 
             # get corresponding data from stored database
-            obj = CurrencyConvert.objects.filter(input_currency='AUD',
-                                                 output_currency='AED',
+            aud = CountryCodes.objects.get(pk='AUD').exchangerates_set.select_related(). \
+                order_by('updated_on').first()
+            cad = CountryCodes.objects.get(pk='CAD').exchangerates_set.select_related(). \
+                order_by('updated_on').first()
+            obj = CurrencyConvert.objects.filter(input_currency=aud,
+                                                 output_currency=cad,
                                                  input_value=10).order_by('-asked_on').first()
 
             self.assertAlmostEqual(round(float(value), 2), round(obj.output_value, 2))
@@ -142,7 +150,7 @@ class CurrencyConvertFormTest(LiveServerTestCase):
 
 
 class SearchTest(LiveServerTestCase):
-    fixtures = ['mod.json']
+    fixtures = ['test_data.json']
 
     @classmethod
     def setUpClass(cls):
