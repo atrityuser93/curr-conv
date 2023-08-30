@@ -52,7 +52,10 @@ class ExchangeRates(models.Model, object):
 
     def save(self, *args, **kwargs):
         # logging.info(f"Line 57 in ExchangeRates.save(): {kwargs['api_key']}")
-        self.populate_conversions(api_key=kwargs['api_key'])
+        if 'api_key' in kwargs.keys():
+            self.populate_conversions(api_key=kwargs['api_key'])
+        else:
+            self.populate_conversions()
         return super(ExchangeRates, self).save()
 
     def eur_per_unit(self):
@@ -74,6 +77,10 @@ class ExchangeRates(models.Model, object):
         currency_list = ['USD', 'GBP', 'JPY', self.base.get_currency_code()]
         symbol_list = ','.join(currency_list)
         # logging.info('{}'.format(symbol_list))
+        if not api_key:
+            return {'success': False, 'rates': {'USD': None, 'GBP': None, 'JPY': None},
+                    'error': {'info': 'No API Key give', 'code': 101}}
+
         api_response = requests.get(url=self.url, params={'access_key': api_key,
                                                           'symbols': symbol_list}
                                     )
@@ -107,10 +114,12 @@ class ExchangeRates(models.Model, object):
             # self.save(update_fields=['to_USD', 'to_EUR', 'to_GBP', 'to_JPY', 'updated_on'])
 
         else:
-            logging.info('API call unsuccessful. Error: {} and Error code: {}'.format(response["error"]["info"],
-                                                                                      response["error"]["code"]))
-            # obj = ExchangeRates()
-            # logging.info('generate_conversion: Empty obj type {}'.format(type(obj)))
+            if 'error' not in response.keys() and 'code' not in response.keys():
+                logging.info('API call unsuccessful. Error undetermined.')
+
+            logging.info('API call unsuccessful. Error: {} and '
+                         'Error code: {}'.format(response["error"]["info"],
+                                                 response["error"]["code"]))
 
     def populate_conversions(self, api_key=''):
         """Populate ExchangeRate model attributes"""
