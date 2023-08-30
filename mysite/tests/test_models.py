@@ -1,8 +1,7 @@
 import sys, os
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
-from copy import copy
-import datetime as dt
+import logging
 
 from django.test import TestCase, TransactionTestCase
 from django.utils import timezone
@@ -41,15 +40,17 @@ class ExchangeRatesTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         """setup data to test ExchangeRates model"""
-        ExchangeRates.objects.create(code='ABX', currency='This is a test currency to test the model',
+        base = CountryCodes.objects.create(code='ABX',
+                                           currency='This is a test currency to test the model')
+        ExchangeRates.objects.create(base=base,
                                      to_USD=2.0, to_EUR=3.0, to_GBP=4.0, to_JPY=5.0)
 
-    def test_generate_conversions(self):
+    def test_calculate_conversions(self):
         response = {'success': True,
                     'rates': {'USD': 4.0, 'GBP': 2.0, 'JPY': 400, 'ABX': 500}}
         # get current objects
         obj = ExchangeRates.objects.get(pk=1)
-        obj = obj.generate_conversions(response, symbol='ABX')
+        obj._calculate_conversions(response)
 
         subtest_checks = [('to_USD', 'USD Exchange Rate Check', 4/500),
                           ('to_EUR', 'EUR Exchange Rate Check', 1/500),
@@ -64,12 +65,16 @@ class ExchangeRatesTest(TestCase):
 class CurrencyConvertTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        ExchangeRates.objects.create(code='ABX', currency='This is a test currency to test the model',
-                                     to_USD=4/500, to_EUR=1/500, to_GBP=2/500, to_JPY=4/5)
-        ExchangeRates.objects.create(code='USD', currency='This is a test US Dollar',
-                                     to_USD=1.0, to_EUR=1/4, to_GBP=1/2, to_JPY=125)
-        CurrencyConvert.objects.create(input_currency='ABX',
-                                       output_currency='USD',
+        base1 = CountryCodes.objects.create(code='ABX',
+                                            currency='This is a test currency to test the model')
+        base2 = CountryCodes.objects.create(code='USD',
+                                            currency='United States Dollar')
+        ex1 = ExchangeRates.objects.create(base=base1,
+                                           to_USD=4/500, to_EUR=1/500, to_GBP=2/500, to_JPY=4/5)
+        ex2 = ExchangeRates.objects.create(base=base2,
+                                           to_USD=1.0, to_EUR=1/4, to_GBP=1/2, to_JPY=125)
+        CurrencyConvert.objects.create(input_currency=ex1,
+                                       output_currency=ex2,
                                        input_value=10)
 
     def test_convert(self):
@@ -88,7 +93,7 @@ class CurrencyConvertTest(TestCase):
 
 
 class CountryCodesDBTest(TransactionTestCase):
-    fixtures = ['mod.json']
+    fixtures = ['test_data.json']
 
     @classmethod
     def setUpClass(cls):
@@ -111,7 +116,7 @@ class CountryCodesDBTest(TransactionTestCase):
 
 
 class ExchangeRatesDBTest(TransactionTestCase):
-    fixtures = ['mod.json']
+    fixtures = ['test_data.json']
 
     @classmethod
     def setUpClass(cls):
@@ -122,15 +127,15 @@ class ExchangeRatesDBTest(TransactionTestCase):
         super().tearDownClass()
 
     def test_exchage_rates(self):
-        obj = ExchangeRates.objects.get(pk=5)
+        obj = ExchangeRates.objects.get(pk=3)
 
         with self.subTest('Test Country Code'):
-            self.assertEqual(obj.code, 'AUD')
+            self.assertEqual(obj.base.code, 'AUD')
 
-        test_values = [('Test USD Exchange Rate', 'to_USD', 0.644705481278579),
-                       ('Test Euro Exchange Rate', 'to_EUR', 0.5939254492897542),
-                       ('Test Pound Sterling Exchange Rate', 'to_GBP', 0.5060619000981759),
-                       ('Test JPY Exchange Rate', 'to_JPY', 93.89332445612763)]
+        test_values = [('Test USD Exchange Rate', 'to_USD', 0.648041850213695),
+                       ('Test Euro Exchange Rate', 'to_EUR', 0.5964967744436922),
+                       ('Test Pound Sterling Exchange Rate', 'to_GBP', 0.5132461056216838),
+                       ('Test JPY Exchange Rate', 'to_JPY', 94.71553665323555)]
 
         for i_val in test_values:
             with self.subTest(i_val[0]):
@@ -138,7 +143,7 @@ class ExchangeRatesDBTest(TransactionTestCase):
 
 
 class CurrencyConvertDBTest(TransactionTestCase):
-    fixtures = ['mod.json']
+    fixtures = ['test_data.json']
 
     @classmethod
     def setUpClass(cls):
@@ -150,14 +155,14 @@ class CurrencyConvertDBTest(TransactionTestCase):
 
     def test_currency_convert_db(self):
         """Test whether the ConvertCurrency model db is present in test_db"""
-        obj = CurrencyConvert.objects.get(pk=6)
+        obj = CurrencyConvert.objects.get(pk=4)
 
         tests = [('Input Currency Check', 'input_currency', 'AUD'),
                  ('Output Currency Check', 'output_currency', 'AED')]
 
         for i_val in tests:
             with self.subTest(i_val[0]):
-                self.assertEqual(getattr(obj, i_val[1]), i_val[2])
+                self.assertEqual(getattr(obj, i_val[1]).base.code, i_val[2])
 
         with self.subTest('Conversion Factor Check'):
-            self.assertAlmostEqual(obj.conversion, 2.3778669025433716)
+            self.assertAlmostEqual(obj.conversion, 2.380795786346785)
