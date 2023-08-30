@@ -27,7 +27,7 @@ Locally Available Exchange Rates
 			</tr>
 			{% for item in rates %}		
 			<tr>
-				<td class="col">{{ item.code }}</td>
+				<td class="col">{{ item.base.code }}</td>
 				<td class="col">{{ item.to_USD|floatformat:2 }}</td>
 				<td class="col">{{ item.to_EUR|floatformat:2 }}</td>
 				<td class="col">{{ item.to_GBP|floatformat:2 }}</td>
