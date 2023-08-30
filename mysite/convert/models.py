@@ -26,8 +26,18 @@ class CountryCodes(models.Model):
     def get_currency_name(self):
         return self.currency
 
+    def matching_exchange_rates(self, latest, url='', api_key=''):
+        """get xchange rates that match the given CountryCodes object"""
+        exchange_rate_obj = self.exchangerates_set.select_related().\
+            filter(updated_on__gt=latest).order_by('updated_on').first()
+        if exchange_rate_obj is None:
+            logging.info('CountryCodes.matching_exchange_rates(): No Rates Found')
+            exchange_rate_obj = ExchangeRates(base=self, url=url)
+            exchange_rate_obj.save(api_key=api_key)
+        return exchange_rate_obj
 
-class ExchangeRates(models.Model):
+
+class ExchangeRates(models.Model, object):
     """db storing conversion values"""
     base = models.ForeignKey(CountryCodes, on_delete=models.CASCADE)
     to_USD = models.FloatField(default=0.0)     # conversion rate to USD for 1 from_currency
@@ -38,9 +48,38 @@ class ExchangeRates(models.Model):
     url = models.URLField(max_length=250, default='')
 
     def __str__(self):
-        return self.code
+        return self.base.code
 
-    def generate_conversions(self, response, symbol: str):
+    def save(self, *args, **kwargs):
+        # logging.info(f"Line 57 in ExchangeRates.save(): {kwargs['api_key']}")
+        self.populate_conversions(api_key=kwargs['api_key'])
+        return super(ExchangeRates, self).save()
+
+    def eur_per_unit(self):
+        return self.to_EUR
+
+    # @classmethod
+    # def create_rates(cls, **kwargs):
+    #     # obj = ExchangeRates(kwargs)
+    #     # logging.info(f"ExchnageRates.create_rates(): Object Attributes base {type(kwargs['base'])}")
+    #     # obj.populate_conversions(kwargs['api_key'])
+    #     return cls(kwargs)
+
+    def _request_api_call(self, api_key: str):
+        """call fixer.io api and get response as JSON objects.
+        Provides EUR (fixed base) to OTHER conversion rates.
+        Output is JSON"""
+
+        logging.info(f'ExchnageRates._request_api_call(): Object Attributes base {self.base_id}')
+        currency_list = ['USD', 'GBP', 'JPY', self.base.get_currency_code()]
+        symbol_list = ','.join(currency_list)
+        # logging.info('{}'.format(symbol_list))
+        api_response = requests.get(url=self.url, params={'access_key': api_key,
+                                                          'symbols': symbol_list}
+                                    )
+        return api_response.json()
+
+    def _calculate_conversions(self, response):
         """convert JSON response to values that could be used
         for conversion between different currencies"""
 
@@ -48,7 +87,7 @@ class ExchangeRates(models.Model):
             usd_per_eur = response["rates"]["USD"]
             gbp_per_eur = response["rates"]["GBP"]
             jpy_per_eur = response["rates"]["JPY"]
-            sym_per_eur = response["rates"][symbol]
+            sym_per_eur = response["rates"][self.base.get_currency_code()]
             # convert to USD, GBP and JPY
             usd__sym = usd_per_eur / sym_per_eur
             gbp__sym = gbp_per_eur / sym_per_eur
@@ -100,15 +139,14 @@ class CurrencyConvert(models.Model):
         # logging.info('models: %s{} and %s{}'.format(self.input_currency, self.output_currency))
         return super(CurrencyConvert, self).save(*args, **kwargs)
 
-    def convert(self, url='', api_key='', **kwargs):
+    def convert(self, **kwargs):
         """Implements currency conversion logic between input and output currencies"""
-        # fetch conversion rates to EUR
-        # logging.info('models: In type: {} Out type {}'.format(type(curr_in), type(curr_out)))
-        # logging.info('models: In: {}, Out: {}'.format(curr_in, curr_out))
-        currency_in, currency_out = self._get_conversion_rates(url=url, api_key=api_key)
 
+        # logging.info('models: In type: {} Out type {}'.format(type(curr_in), type(curr_out)))
         # use EUR as base currency (Determined by API capabilities)
-        self.conversion = currency_in.to_EUR / currency_out.to_EUR
+        # self.conversion = currency_in.to_EUR / currency_out.to_EUR
+        self.conversion = self.input_currency.eur_per_unit() / \
+                          self.output_currency.eur_per_unit()
 
         self.convert_currency()         # perform currency conversion
         self.save(**kwargs)             # save object after conversion

@@ -1,8 +1,10 @@
 import requests, logging
+from datetime import datetime
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.db import IntegrityError
+from django.utils import timezone
 from django.db.models import Q
 from django.urls import reverse_lazy
 
@@ -23,17 +25,29 @@ def home(request):
         form = CurrencyConvertForm(request.POST)
         if form.is_valid():
             logging.info('Validated form')
-            input_curr_symbol = form.cleaned_data['input_currency']
-            output_curr_symbol = form.cleaned_data['output_currency']
+            input_curr = form.cleaned_data['input_currency']
+            output_curr = form.cleaned_data['output_currency']
             input_value = form.cleaned_data['input_value']
 
             # create conversion object (for storing call in db)
+            one_week = datetime.today() - timezone.timedelta(days=7)
+
+            # check for existing ExchangeRate instances that match
+            input_object = input_curr.matching_exchange_rates(latest=one_week,
+                                                              url='http://data.fixer.io/api/latest',
+                                                              api_key=settings.API_KEY
+                                                              )
+            logging.info(f'Line 41 in views.home: input_query object: {type(input_object)}')
+            output_object = output_curr.matching_exchange_rates(latest=one_week,
+                                                                url='http://data.fixer.io/api/latest',
+                                                                api_key=settings.API_KEY)
+            # logging.info(f'Line 57 in views.home: output_query object: {type(output_object)}')
+
             conv_obj = CurrencyConvert(input_value=input_value,
-                                       input_currency=str(input_curr_symbol.code),
-                                       output_currency=str(output_curr_symbol.code),
+                                       input_currency=input_object,
+                                       output_currency=output_object,
                                        )
-            conv_obj.convert(url='http://data.fixer.io/api/latest',
-                             api_key=settings.API_KEY)
+            conv_obj.convert()
 
             logging.info('{} {} is {} {}'.format(conv_obj.input_value, conv_obj.input_currency,
                                                  conv_obj.output_value, conv_obj.output_currency))
@@ -66,7 +80,6 @@ def delete_convert_history(request):
                       context={'form': form})
     return render(request, template_name='converter/delete-conversions.html',
                   context={'form': form})
-
 
 
 class ConvertCallsView(ListView):
@@ -173,7 +186,7 @@ class AvailableExchangeRatesView(ListView):
     
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.order_by('code')
+        return queryset.order_by('base')
     
 
 class SearchExchangeRatesView(ListView):
@@ -183,8 +196,8 @@ class SearchExchangeRatesView(ListView):
 
     def get_queryset(self):
         search_query = self.request.GET.get('search_rates_query')
-        rates = ExchangeRates.objects.filter(Q(code=search_query) |
-                                             Q(currency__contains=search_query))
+        rates = ExchangeRates.objects.filter(Q(base__code=search_query) |
+                                             Q(base__currency__contains=search_query))
         return rates
 
     def get_context_data(self, *, object_list=None, **kwargs):
