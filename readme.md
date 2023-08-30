@@ -34,6 +34,10 @@
 - This repository uses Selenium for testing the web application-browser interface
 - Run `python manage.py test` from the outermost project directory to run unit test provided in the `tests` package 
 
+## August 30, 2023
+- Input and repeat forms have been modified and work correctly now
+- DB migrated and code refactored to use Foreign Key connections between tables
+
 ## August 24, 2023
 - Cosmetic imporvements to how list view is displayed and how results are stored (2 decimal rounding)
 - Complete Working Test suite implemented with Python unittest, Django Tests and Selenium (All tests passing) with custom dataset
