@@ -1,3 +1,4 @@
+from __future__ import annotations
 from datetime import datetime
 import logging
 import requests
@@ -34,6 +35,7 @@ class ExchangeRates(models.Model):
     to_GBP = models.FloatField(default=0.0)     # conversion rate to GBP for 1 from_currency
     to_JPY = models.FloatField(default=0.0)     # conversion rate to JPY for 1 from_currency
     updated_on = models.DateTimeField(default=timezone.now)
+    url = models.URLField(max_length=250, default='')
 
     def __str__(self):
         return self.code
@@ -70,13 +72,19 @@ class ExchangeRates(models.Model):
                                                                                       response["error"]["code"]))
             # obj = ExchangeRates()
             # logging.info('generate_conversion: Empty obj type {}'.format(type(obj)))
-        return self
+
+    def populate_conversions(self, api_key=''):
+        """Populate ExchangeRate model attributes"""
+        response = self._request_api_call(api_key=api_key)
+        self._calculate_conversions(response)
 
 
 class CurrencyConvert(models.Model):
     """db to store different conversions - db of records"""
-    input_currency = models.ForeignKey(CountryCodes, on_delete=models.CASCADE, related_name='input_code')
-    output_currency = models.ForeignKey(CountryCodes, on_delete=models.CASCADE, related_name='output_code')
+    input_currency = models.ForeignKey(ExchangeRates, on_delete=models.CASCADE,
+                                       related_name='input_rate')
+    output_currency = models.ForeignKey(ExchangeRates, on_delete=models.CASCADE,
+                                        related_name='output_rate')
     input_value = models.FloatField(default=1.0)
     output_value = models.FloatField(default=0.0)
     conversion = models.FloatField(default=1.0)
