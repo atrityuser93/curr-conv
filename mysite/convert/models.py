@@ -130,11 +130,11 @@ class ExchangeRates(models.Model, object):
 class CurrencyConvert(models.Model):
     """db to store different conversions - db of records"""
     input_currency = models.ForeignKey(ExchangeRates, on_delete=models.CASCADE,
-                                       related_name='input_rate')
+                                       related_name='input_rate', verbose_name='Input Currency')
     output_currency = models.ForeignKey(ExchangeRates, on_delete=models.CASCADE,
-                                        related_name='output_rate')
-    input_value = models.FloatField(default=1.0)
-    output_value = models.FloatField(default=0.0)
+                                        related_name='output_rate', verbose_name='Output Currency')
+    input_value = models.FloatField(default=1.0, verbose_name='Value')
+    output_value = models.FloatField(default=0.0, verbose_name='Value')
     conversion = models.FloatField(default=1.0)
     _is_converted = models.BooleanField(default=False)
     asked_on = models.DateTimeField(default=timezone.now)
@@ -142,11 +142,22 @@ class CurrencyConvert(models.Model):
     # self.convert()
 
     def __str__(self):
-        return self.input_currency
+        return f'{self.input_currency.base.code} -> {self.output_currency.base.code}'
+
+    def to_dict(self):
+        return {'input_currency': self.input_currency.base.code,
+                'input_value': self.input_value,
+                'output_currency': self.output_currency.base.code,
+                'output_value': self.output_value,
+                'conversion': self.conversion,
+                'asked_on': self.asked_on}
 
     def save(self, *args, **kwargs):
         # logging.info('models: %s{} and %s{}'.format(self.input_currency, self.output_currency))
         return super(CurrencyConvert, self).save(*args, **kwargs)
+
+    # def get(self, request):
+    #     return self.input_currency.base.code
 
     def convert(self, **kwargs):
         """Implements currency conversion logic between input and output currencies"""
