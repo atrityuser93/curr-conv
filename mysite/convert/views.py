@@ -13,7 +13,7 @@ from django.views.generic import ListView
 from django.conf import settings
 
 from .forms import CurrencyConvertForm, CurrencyTickerDelete, ExchangeRateDelete
-from .forms import CurrencyConvertDisplayForm, CurrencyConvertDeleteForm
+from .forms import CurrencyConvertDeleteForm
 from .models import CountryCodes, ExchangeRates, CurrencyConvert
 
 
@@ -37,7 +37,7 @@ def home(request):
                                                               url='http://data.fixer.io/api/latest',
                                                               api_key=settings.API_KEY
                                                               )
-            logging.info(f'Line 41 in views.home: input_query object: {type(input_object)}')
+            # logging.info(f'Line 41 in views.home: input_query object: {type(input_object)}')
             output_object = output_curr.matching_exchange_rates(latest=one_week,
                                                                 url='http://data.fixer.io/api/latest',
                                                                 api_key=settings.API_KEY)
@@ -53,7 +53,7 @@ def home(request):
                                                  conv_obj.output_value, conv_obj.output_currency))
 
             # form.cleaned_data["output_value"] = conv_obj.output_value
-            form = CurrencyConvertDisplayForm(instance=conv_obj)
+            form = CurrencyConvertForm(initial=conv_obj.to_dict())
 
             return render(request, template_name='converter/home.html',
                           context={'form': form, 'complete': True})
